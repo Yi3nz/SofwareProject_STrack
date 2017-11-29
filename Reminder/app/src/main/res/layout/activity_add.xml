@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="15dp"
+    android:orientation="vertical"
+    android:pointerIcon="wait">
+
+    <!--Select subject & date - Reference https://www.youtube.com/watch?v=9eTK8ZOBJsQ-->
+    <LinearLayout
+        android:id="@+id/lTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnSubject"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/border_button"
+            android:drawableLeft="@drawable/icon_subject"
+            android:paddingLeft="10dp"
+            android:text="@string/btnTextSubject"
+            android:onClick="showDialogSubjectList"/>
+
+        <Button
+            android:id="@+id/btnDueDate"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/border_button"
+            android:drawableLeft="@drawable/icon_date"
+            android:paddingLeft="10dp"
+            android:text="@string/btnTextDuedate" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/eTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lTop"
+        android:layout_marginTop="20dp"
+        android:hint="@string/hintCATitle"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/eAdditionalNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/eTitle"
+        android:layout_marginTop="40dp"
+        android:hint="@string/hint_CANotes"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/eAdditionalNote"
+        android:layout_marginTop="60dp"
+        android:background="#f06292"
+        android:onClick="saveAllClick"
+        android:text="@string/btnSaveCA" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="49dp"
+        android:background="@color/colorPrimary"
+        android:onClick="refresh"
+        android:text="Refresh"
+        android:textColor="@android:color/background_dark" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button3"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:text="@string/addActicity_reminder" />
+
+</RelativeLayout>

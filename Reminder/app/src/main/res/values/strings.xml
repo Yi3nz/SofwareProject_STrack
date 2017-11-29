@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Reminder</string>
+    <string name="textSplashScreen">Welcome buddies!! ੭ ᐕ)੭*⁾⁾</string>
+    <!--Add CA Activity-->
+    <string name="btnTextSubject">Subject</string>
+    <string name="btnTextDuedate">Due date</string>
+    <string name="hintCATitle">Enter your CA title</string>
+    <string name="hint_CANotes">Enter additional notes</string>
+    <string name="btnSaveCA">Save</string>
+    <!--Add Subject Activity-->
+    <string name="hint_SubjectName">Enter new subject</string>
+    <string name="btn_SubmitSubject">Submit</string>
+    <!--Demo Main Activity-->
+    <string name="demo_CATitle">CA Title</string>
+    <string name="demo_CASubject">Subject</string>
+    <string name="demo_CADuedate">Duedate</string>
+    <string name="dialog_reminder">***Click the return button to save the list while exit***</string>
+    <string name="addActicity_reminder">***Press refresh to update the subject button once select the subject from the subject list.***</string>
+    <string name="actionbar_photo">Photo</string>
+    <string name="actionbar_gallery">Gallery</string>
+    <string name="actionbar_exit">Exit</string>
+</resources>
