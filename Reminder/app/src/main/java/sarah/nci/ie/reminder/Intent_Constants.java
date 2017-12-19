@@ -11,6 +11,7 @@ public class Intent_Constants {
     public final static int INTENT_RESULT_CODE_TWO = 2;
 
     //For SaveAll
+    public final static String INTENT_DEVICE_FIELD = "device_field";
     public final static String INTENT_CA_FIELD = "ca_field";
     public final static String INTENT_DUEDATE_FIELD = "duedate_field";
     public final static String INTENT_SUBJECT_FIELD = "sub_field";

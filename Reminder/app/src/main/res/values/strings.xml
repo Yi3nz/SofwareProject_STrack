@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Reminder</string>
+    <string name="app_name">S-Track</string>
     <string name="textSplashScreen">Welcome buddies!! ੭ ᐕ)੭*⁾⁾</string>
     <!--Add CA Activity-->
     <string name="btnTextSubject">Subject</string>

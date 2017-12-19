@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="sarah.nci.ie.reminder">
 
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_reminder"
@@ -11,22 +13,27 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".Activity_Splash"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".AddActivity" />
+        <activity android:name=".Activity_Main" />
+        <activity android:name=".Activity_RegisterDevice" />
         <activity
-            android:name=".SubjectDialogActivity"
+            android:name=".Dialog_MainDialog"
             android:theme="@style/AppTheme.SubjectDialogCustomTheme"></activity>
-        <activity android:name=".AddSubjectActivity" />
-        <activity android:name=".EditActivity"></activity>
+        <activity android:name=".Dialog_RemoteControl"></activity>
+        <activity android:name=".Dialog_RemoveDevice"></activity>
+
         <activity android:name=".Action_Photo"></activity>
         <activity android:name=".Action_Gallery"></activity>
+
+        <!--Scan QR code-->
+        <activity android:name=".Activity_Scan_QR_Code">
+        </activity>
 
     </application>
 

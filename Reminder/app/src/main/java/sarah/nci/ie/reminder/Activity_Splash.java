@@ -6,13 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 /**
  * Splash activity - Reference: https://www.youtube.com/watch?v=h_hTuaEpc-8
  */
 
-public class SplashActivity extends AppCompatActivity {
+public class Activity_Splash extends AppCompatActivity {
     private ImageView iv;
 
     @Override
@@ -26,7 +25,7 @@ public class SplashActivity extends AppCompatActivity {
         iv.startAnimation(myanim);
 
         //
-        final Intent i = new Intent(this, MainActivity.class);
+        final Intent i = new Intent(this, Activity_Main.class);
 
         Thread timer = new Thread(){
             public void run (){
