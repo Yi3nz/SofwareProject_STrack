@@ -38,7 +38,7 @@
         <activity android:name=".Action_Gallery" />
 
         <!-- Scan QR code -->
-        <activity android:name=".Activity_Scan_QR_Code"></activity>
+        <activity android:name=".Activity_Scan_QR_Code" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -54,7 +54,8 @@
 
         <activity
             android:name=".Dialog_CurrentLocation"
-            android:label="@string/title_activity_dialog__current_location"></activity>
+            android:label="@string/title_activity_dialog__current_location" />
+        <activity android:name=".Dialog_Connect"></activity>
     </application>
 
 </manifest>

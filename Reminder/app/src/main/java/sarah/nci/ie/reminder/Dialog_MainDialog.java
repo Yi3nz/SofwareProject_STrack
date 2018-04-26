@@ -51,6 +51,14 @@ public class Dialog_MainDialog extends Activity {
             }
         });
 
+        //Connect to AWS MQTT
+        btn02.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Dialog_MainDialog.this, Dialog_Connect.class));
+            }
+        });
+
         //Go to Dialog_RemoteControl.java
         btn03.setOnClickListener(new View.OnClickListener() {
             @Override
