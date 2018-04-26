@@ -43,16 +43,25 @@ public class Dialog_MainDialog extends Activity {
         btn03 = (Button)findViewById(R.id.btnRemoteControls);
         btn04 = (Button)findViewById(R.id.btnRemoveDevice);
 
+        //Current Location on map
+        btn01.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Dialog_MainDialog.this, Dialog_CurrentLocation.class));
+            }
+        });
+
+        //Go to Dialog_RemoteControl.java
         btn03.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) { //Go to Dialog_RemoteControl.java
+            public void onClick(View view) {
                 startActivity(new Intent(Dialog_MainDialog.this, Dialog_RemoteControl.class));
             }
         });
 
         btn04.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) { //Go to Dialog_RemoteControl.java
+            public void onClick(View view) {
                 startActivity(new Intent(Dialog_MainDialog.this, Dialog_RemoveDevice.class));
             }
         });

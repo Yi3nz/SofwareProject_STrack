@@ -19,4 +19,5 @@
     <string name="actionbar_photo">Photo</string>
     <string name="actionbar_gallery">Gallery</string>
     <string name="actionbar_exit">Exit</string>
+    <string name="title_activity_dialog__current_location">Map View</string>
 </resources>
