@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">S-Track</string>
     <string name="textSplashScreen">Welcome buddies!! ੭ ᐕ)੭*⁾⁾</string>
-    <!--Add CA Activity-->
+    <!--Deviced CA Activity-->
     <string name="btnTextSubject">Subject</string>
     <string name="btnTextDuedate">Due date</string>
     <string name="hintCATitle">Enter your CA title</string>
@@ -11,9 +11,9 @@
     <string name="hint_SubjectName">Enter new subject</string>
     <string name="btn_SubmitSubject">Submit</string>
     <!--Demo Main Activity-->
-    <string name="demo_CATitle">CA Title</string>
-    <string name="demo_CASubject">Subject</string>
-    <string name="demo_CADuedate">Duedate</string>
+    <string name="item_Name">Name</string>
+    <string name="item_Address">Address</string>
+    <string name="item_Distance">Distance</string>
     <string name="dialog_reminder">***Click the return button to save the list while exit***</string>
     <string name="addActicity_reminder">***Press refresh to update the subject button once select the subject from the subject list.***</string>
     <string name="actionbar_photo">Photo</string>

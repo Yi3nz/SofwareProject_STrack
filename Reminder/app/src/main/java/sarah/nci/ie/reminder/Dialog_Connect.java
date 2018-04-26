@@ -16,7 +16,6 @@ import com.amazonaws.mobileconnectors.iot.AWSIotMqttNewMessageCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttQos;
 import com.amazonaws.regions.Regions;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,31 +26,16 @@ public class Dialog_Connect extends AppCompatActivity {
 
     static final String LOG_TAG = Dialog_Connect.class.getCanonicalName();
 
-    // --- Constants to modify per your configuration ---
-
-    // Customer specific IoT endpoint
-    // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com,
+    // IOT Endpoint
     private static final String CUSTOMER_SPECIFIC_ENDPOINT = "ansingrsn5txz.iot.us-west-2.amazonaws.com";
-
-    // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
-    // AWS IoT permissions.
+    // Unauthenticated cognito pool ID
     private static final String COGNITO_POOL_ID = "us-west-2:cfde6d61-be8c-4330-ad6b-60df256ce3b3";
-
-    // Region of AWS IoT
+    // Used region of AWS IoT
     private static final Regions MY_REGION = Regions.US_WEST_2;
 
-    EditText txtSubscribe;
-    EditText txtTopic;
-    EditText txtMessage;
-
-    TextView tvLastMessage;
-    TextView tvClientId;
-    TextView tvStatus;
-
-    Button btnConnect;
-    Button btnSubscribe;
-    Button btnPublish;
-    Button btnDisconnect;
+    EditText txtSubscribe, txtTopic, txtMessage;
+    TextView tvLastMessage, tvClientId, tvStatus;
+    Button btnConnect, btnSubscribe, btnPublish, btnDisconnect;
 
     AWSIotMqttManager mqttManager;
     String clientId;
@@ -59,30 +43,21 @@ public class Dialog_Connect extends AppCompatActivity {
     CognitoCachingCredentialsProvider credentialsProvider;
 
     //Extract the specefic keys from the json object.
-    String latitude, longtitude, utc_time;
+    String message, latitude, longtitude, utc_time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_connect);
 
-        txtSubscribe = (EditText) findViewById(R.id.txtSubscribe);
-        txtTopic = (EditText) findViewById(R.id.txtTopic);
         txtMessage = (EditText) findViewById(R.id.txtMessage);
 
         tvLastMessage = (TextView) findViewById(R.id.tvLastMessage);
         tvClientId = (TextView) findViewById(R.id.tvClientId);
         tvStatus = (TextView) findViewById(R.id.tvStatus);
 
-        btnConnect = (Button) findViewById(R.id.btnConnect);
-        btnConnect.setOnClickListener(connectClick);
-        btnConnect.setEnabled(false);
-
         btnSubscribe = (Button) findViewById(R.id.btnSubscribe);
         btnSubscribe.setOnClickListener(subscribeClick);
-
-        btnPublish = (Button) findViewById(R.id.btnPublish);
-        btnPublish.setOnClickListener(publishClick);
 
         btnDisconnect = (Button) findViewById(R.id.btnDisconnect);
         btnDisconnect.setOnClickListener(disconnectClick);
@@ -110,66 +85,62 @@ public class Dialog_Connect extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        btnConnect.setEnabled(true);
                     }
                 });
             }
         }).start();
+
+        //On page created, connect directly.
+        Log.d(LOG_TAG, "clientId = " + clientId);
+
+        try {
+            mqttManager.connect(credentialsProvider, new AWSIotMqttClientStatusCallback() {
+                @Override
+                public void onStatusChanged(final AWSIotMqttClientStatus status,
+                                            final Throwable throwable) {
+                    Log.d(LOG_TAG, "Status = " + String.valueOf(status));
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (status == AWSIotMqttClientStatus.Connecting) {
+                                tvStatus.setText("Connecting...");
+
+                            } else if (status == AWSIotMqttClientStatus.Connected) {
+                                tvStatus.setText("Connected");
+
+                            } else if (status == AWSIotMqttClientStatus.Reconnecting) {
+                                if (throwable != null) {
+                                    Log.e(LOG_TAG, "Connection error.", throwable);
+                                }
+                                tvStatus.setText("Reconnecting");
+                            } else if (status == AWSIotMqttClientStatus.ConnectionLost) {
+                                if (throwable != null) {
+                                    Log.e(LOG_TAG, "Connection error.", throwable);
+                                    throwable.printStackTrace();
+                                }
+                                tvStatus.setText("Disconnected");
+                            } else {
+                                tvStatus.setText("Disconnected");
+
+                            }
+                        }
+                    });
+                }
+            });
+        } catch (final Exception e) {
+            Log.e(LOG_TAG, "Connection error.", e);
+            tvStatus.setText("Error! " + e.getMessage());
+        }
     }
 
-    View.OnClickListener connectClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-            Log.d(LOG_TAG, "clientId = " + clientId);
-
-            try {
-                mqttManager.connect(credentialsProvider, new AWSIotMqttClientStatusCallback() {
-                    @Override
-                    public void onStatusChanged(final AWSIotMqttClientStatus status,
-                                                final Throwable throwable) {
-                        Log.d(LOG_TAG, "Status = " + String.valueOf(status));
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (status == AWSIotMqttClientStatus.Connecting) {
-                                    tvStatus.setText("Connecting...");
-
-                                } else if (status == AWSIotMqttClientStatus.Connected) {
-                                    tvStatus.setText("Connected");
-
-                                } else if (status == AWSIotMqttClientStatus.Reconnecting) {
-                                    if (throwable != null) {
-                                        Log.e(LOG_TAG, "Connection error.", throwable);
-                                    }
-                                    tvStatus.setText("Reconnecting");
-                                } else if (status == AWSIotMqttClientStatus.ConnectionLost) {
-                                    if (throwable != null) {
-                                        Log.e(LOG_TAG, "Connection error.", throwable);
-                                        throwable.printStackTrace();
-                                    }
-                                    tvStatus.setText("Disconnected");
-                                } else {
-                                    tvStatus.setText("Disconnected");
-
-                                }
-                            }
-                        });
-                    }
-                });
-            } catch (final Exception e) {
-                Log.e(LOG_TAG, "Connection error.", e);
-                tvStatus.setText("Error! " + e.getMessage());
-            }
-        }
-    };
-
+    //On Subscribe click
     View.OnClickListener subscribeClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
 
-            final String topic = txtSubscribe.getText().toString();
+            //final String topic = txtSubscribe.getText().toString();
+            final String topic = "pi/observations/DeviceID";
 
             Log.d(LOG_TAG, "topic = " + topic);
 
@@ -182,7 +153,7 @@ public class Dialog_Connect extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         try {
-                                            String message = new String(data, "UTF-8");
+                                            message = new String(data, "UTF-8");
                                             Log.d(LOG_TAG, "Message arrived:");
                                             Log.d(LOG_TAG, "   Topic: " + topic);
                                             Log.d(LOG_TAG, " Message: " + message);
@@ -213,22 +184,6 @@ public class Dialog_Connect extends AppCompatActivity {
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Subscription error.", e);
             }
-        }
-    };
-
-    View.OnClickListener publishClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-            final String topic = txtTopic.getText().toString();
-            final String msg = txtMessage.getText().toString();
-
-            try {
-                mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Publish error.", e);
-            }
-
         }
     };
 

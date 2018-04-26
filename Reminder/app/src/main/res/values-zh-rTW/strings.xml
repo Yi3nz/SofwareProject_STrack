@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">猶憶</string>
     <string name="textSplashScreen">歡迎小夥伴!! ੭ ᐕ)੭*⁾⁾</string>
-    <!--Add CA Activity-->
+    <!--Deviced CA Activity-->
     <string name="btnTextSubject">科目</string>
     <string name="btnTextDuedate">截止日期</string>
     <string name="hintCATitle">輸入作業名稱</string>

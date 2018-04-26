@@ -12,31 +12,31 @@
         android:layout_weight="33.3">
 
         <TextView
-            android:id="@+id/tvCATitle"
+            android:id="@+id/tvName"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="10dp"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:text="@string/demo_CATitle" />
+            android:text="@string/item_Name" />
 
         <TextView
-            android:id="@+id/tvSubject"
+            android:id="@+id/tvAddress"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_below="@+id/tvCATitle"
+            android:layout_below="@+id/tvAddress"
             android:layout_marginLeft="30dp"
-            android:text="@string/demo_CASubject" />
+            android:text="@string/item_Address" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tvDate"
+        android:id="@+id/tvDistance"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginTop="10dp"
         android:layout_weight="66.6"
         android:gravity="center"
         android:textAlignment="center"
-        android:text="@string/demo_CADuedate" />
+        android:text="@string/item_Distance" />
 </LinearLayout>

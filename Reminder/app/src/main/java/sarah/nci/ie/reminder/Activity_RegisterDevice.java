@@ -24,7 +24,7 @@ public class Activity_RegisterDevice extends AppCompatActivity {
         String caDueDateText = date;*/
 
         if(deviceNickname.equals("")){
-            //Check if the user is submitting empty CA title
+            //Check if the user is submitting empty Device title
         }else{
             Intent intent = new Intent();
             intent.putExtra(Intent_Constants.INTENT_DEVICE_FIELD, deviceNickname);

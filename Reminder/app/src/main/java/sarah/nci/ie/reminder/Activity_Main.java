@@ -23,14 +23,13 @@ import java.util.Scanner;
 
 public class Activity_Main extends AppCompatActivity {
 
-
     //Custom ListView declarations
     private static final String TAG = "Activity_Main";
     String deviceNickname;
 
     ListView listView;
-    ArrayList<CA> caList;
-    CAListAdapter adp;
+    ArrayList<Device> deviceList;
+    DeviceListAdapter adp;
     int position;
 
     //Actionbar - Reference - https://www.journaldev.com/9357/android-actionbar-example-tutorial
@@ -40,7 +39,7 @@ public class Activity_Main extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
+    //Actionbar - Continue
     @Override
     public boolean onOptionsItemSelected(MenuItem item) { switch(item.getItemId()) {
         case R.id.photo:
@@ -68,21 +67,19 @@ public class Activity_Main extends AppCompatActivity {
         Log.d(TAG, "onCreate: Started.");
 
         listView = (ListView) findViewById(R.id.listView);
-        caList = new ArrayList<>();
-        adp = new CAListAdapter(this, R.layout.activity_adapter_view, caList);
+        deviceList = new ArrayList<>();
+        adp = new DeviceListAdapter(this, R.layout.activity_device_adapter, deviceList);
         listView.setAdapter(adp);
 
-        //OnItemClick - Go to Dialog_RemoteControl
+        //OnItemClick - Open the Dialog
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent intent = new Intent();
                 intent.setClass(Activity_Main.this, Dialog_MainDialog.class);
-                intent.putExtra(Intent_Constants.INTENT_CA_DATA, caList.get(position).toString());
+                intent.putExtra(Intent_Constants.INTENT_CA_DATA, deviceList.get(position).toString());
                 intent.putExtra(Intent_Constants.INTENT_ITEM_POSITION, position);
                 startActivityForResult(intent, Intent_Constants.INTENT_REQUEST_CODE_TWO);
-
-                //OnItemClick - Open Dialog
             }
         });
 
@@ -92,16 +89,10 @@ public class Activity_Main extends AppCompatActivity {
 
             while(sc.hasNextLine()){
                 String data[] = sc.nextLine().split(" ");
-                //String data = sc.nextLine();
-                //int len = data.length();
-                //for(int i=0; i<len; i++){
                     if(data.equals("")){
                         break;
                     }
-                    caList.add(new CA(data[0], data[0], data[0]));
-                    //caList.add(new StringBuilder().append("").append(data.charAt(i)).toString());
-                //}
-
+                    deviceList.add(new Device(data[0], data[0], data[0]));
             }
             sc.close();
         }catch(FileNotFoundException e){
@@ -115,9 +106,9 @@ public class Activity_Main extends AppCompatActivity {
     public void onBackPressed() {
         try{
             PrintWriter pw = new PrintWriter(openFileOutput("Device.txt", Context.MODE_PRIVATE));
-            for(CA data : caList){ //Pass each item of the list caList to data
+            for(Device data : deviceList){ //Pass each item of the list deviceList to data
                 pw.println(data);
-                System.out.println("Added: "+data); //I/System.out: Added: sarah.nci.ie.reminder.CA@b4efc34
+                System.out.println("Added: "+data); //I/System.out: Added: sarah.nci.ie.reminder.Device@b4efc34
             }
             pw.close();
         }catch(FileNotFoundException e){
@@ -125,22 +116,6 @@ public class Activity_Main extends AppCompatActivity {
         }
         finish();
     }
-
-    /*
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra("Obj", deviceNickname);
-        setResult(Activity.RESULT_OK, intent);
-        finish();
-        super.onBackPressed();
-    }
-    /*FloatButton click - Go to Activity_RegisterDevice - Straight away
-    public void addClick(View v){
-        Intent intent = new Intent();
-        intent.setClass(Activity_Main.this, Activity_RegisterDevice.class);
-        startActivityForResult(intent, Intent_Constants.INTENT_REQUEST_CODE);
-    }*/
 
     //FloatButton click - Go to scan QR code, and link to the add activity
     final Activity activity = this;
@@ -182,19 +157,9 @@ public class Activity_Main extends AppCompatActivity {
             caSubjectText = data.getStringExtra(Intent_Constants.INTENT_SUBJECT_FIELD);
             caDueDateText = data.getStringExtra(Intent_Constants.INTENT_DUEDATE_FIELD);   */
             deviceNickname = data.getStringExtra(Intent_Constants.INTENT_DEVICE_FIELD);
-            CA newCA = new CA("At Pheonix Park", deviceNickname, "580m");
-            caList.add(newCA);
+            Device newDevice = new Device("At Pheonix Park", deviceNickname, "580m");
+            deviceList.add(newDevice);
             adp.notifyDataSetChanged();
-        }/*
-        else if(resultCode == Intent_Constants.INTENT_REQUEST_CODE_TWO){ //For single item click - after edit
-            caTitleText = data.getStringExtra(Intent_Constants.INTENT_CHANGED_CA);
-
-            position = data.getIntExtra(Intent_Constants.INTENT_ITEM_POSITION, -1);
-            //Create new
-            CA newChangedCA = new CA(caSubjectText, caTitleText, caDueDateText);
-            caList.remove(position);
-            caList.add(position, newChangedCA);
-            adp.notifyDataSetChanged();
-        }*/
+        }
     }
 }
