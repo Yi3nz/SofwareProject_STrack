@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "135776846751",
+    "firebase_url": "https://my-safetrack-1524761559738.firebaseio.com",
+    "project_id": "my-safetrack-1524761559738",
+    "storage_bucket": "my-safetrack-1524761559738.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135776846751:android:72a8566790e6ff6c",
+        "android_client_info": {
+          "package_name": "sarah.nci.ie.reminder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "135776846751-cuce8335q3no3b7ev8e6h92ga9d2l6c6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "sarah.nci.ie.reminder",
+            "certificate_hash": "7c11d7b129472f6dc830359f5dd472d072f1bccf"
+          }
+        },
+        {
+          "client_id": "135776846751-cgbgnrl6dgeok0gqrrq00rd0vfom1gc5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABvinXMEvrUlqslUOL2Jhbsjw4O8AuN0E"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "135776846751-cgbgnrl6dgeok0gqrrq00rd0vfom1gc5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

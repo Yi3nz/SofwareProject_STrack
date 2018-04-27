@@ -13,8 +13,16 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -23,6 +31,9 @@ import java.util.Scanner;
 
 public class Activity_Main extends AppCompatActivity {
 
+    //For Firebase
+    String value = null;
+    String latitude, longtitude, utc_time;
     //Custom ListView declarations
     private static final String TAG = "Activity_Main";
     String deviceNickname;
@@ -62,6 +73,34 @@ public class Activity_Main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Fetch data from Firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Location");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                value = dataSnapshot.getValue(String.class);
+                Toast.makeText(Activity_Main.this, value, Toast.LENGTH_LONG).show();
+                //Extract the specefic keys from the json object.
+                try {
+                    JSONObject reader = new JSONObject(value);
+
+                    JSONObject gps_data  = reader.getJSONObject("gps_data");
+                    latitude = gps_data.getString("Latitude");
+                    longtitude = gps_data.getString("Longtitude");
+                    utc_time = gps_data.getString("UTC Time");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         //Custom ListView
         Log.d(TAG, "onCreate: Started.");
@@ -157,7 +196,7 @@ public class Activity_Main extends AppCompatActivity {
             caSubjectText = data.getStringExtra(Intent_Constants.INTENT_SUBJECT_FIELD);
             caDueDateText = data.getStringExtra(Intent_Constants.INTENT_DUEDATE_FIELD);   */
             deviceNickname = data.getStringExtra(Intent_Constants.INTENT_DEVICE_FIELD);
-            Device newDevice = new Device("At Pheonix Park", deviceNickname, "580m");
+            Device newDevice = new Device("At Pheonix Park", deviceNickname, latitude);
             deviceList.add(newDevice);
             adp.notifyDataSetChanged();
         }

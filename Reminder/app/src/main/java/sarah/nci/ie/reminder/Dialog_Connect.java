@@ -1,6 +1,7 @@
 package sarah.nci.ie.reminder;
 
 //Reference AndroidPubSubWebSocket_Example: https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSubWebSocket
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
@@ -15,6 +17,8 @@ import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttNewMessageCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttQos;
 import com.amazonaws.regions.Regions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +27,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 public class Dialog_Connect extends AppCompatActivity {
+
+    //Define Firebase
+    FirebaseDatabase database;
+    DatabaseReference myRef;
+    //
 
     static final String LOG_TAG = Dialog_Connect.class.getCanonicalName();
 
@@ -139,10 +148,8 @@ public class Dialog_Connect extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            //final String topic = txtSubscribe.getText().toString();
+            //Subscribe to the specific MQTT topic
             final String topic = "pi/observations/DeviceID";
-
-            Log.d(LOG_TAG, "topic = " + topic);
 
             try {
                 mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
@@ -154,9 +161,6 @@ public class Dialog_Connect extends AppCompatActivity {
                                     public void run() {
                                         try {
                                             message = new String(data, "UTF-8");
-                                            Log.d(LOG_TAG, "Message arrived:");
-                                            Log.d(LOG_TAG, "   Topic: " + topic);
-                                            Log.d(LOG_TAG, " Message: " + message);
 
                                             //Extract the specefic keys from the json object.
                                             try {
@@ -166,6 +170,11 @@ public class Dialog_Connect extends AppCompatActivity {
                                                 latitude = gps_data.getString("Latitude");
                                                 longtitude = gps_data.getString("Longtitude");
                                                 utc_time = gps_data.getString("UTC Time");
+
+                                                //Send the MQTT message to Firebase
+                                                database = FirebaseDatabase.getInstance();
+                                                myRef = database.getReference("Location");
+                                                myRef.setValue(message);
 
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -187,16 +196,15 @@ public class Dialog_Connect extends AppCompatActivity {
         }
     };
 
+    //On Disconnect click, disconnect.
     View.OnClickListener disconnectClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             try {
                 mqttManager.disconnect();
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Disconnect error.", e);
             }
-
         }
     };
 }
