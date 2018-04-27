@@ -171,10 +171,20 @@ public class Dialog_Connect extends AppCompatActivity {
                                                 longtitude = gps_data.getString("Longtitude");
                                                 utc_time = gps_data.getString("UTC Time");
 
-                                                //Send the MQTT message to Firebase
+                                                //Send the RAW mqtt message to Firebase - Raw_Location
                                                 database = FirebaseDatabase.getInstance();
-                                                myRef = database.getReference("Location");
+                                                myRef = database.getReference("Raw_Location");
                                                 myRef.setValue(message);
+                                                //Send the queried json message to Firebase - Location
+                                                myRef = database.getReference("Location/Latitude");
+                                                myRef.setValue(latitude);
+                                                myRef = database.getReference("Location/Longtitude");
+                                                myRef.setValue(longtitude);
+                                                myRef = database.getReference("Location/Utc time");
+                                                myRef.setValue(utc_time);
+//                                                //Send the extracted message to Firebase - Device/LB7ujxfEps5uYAfmmaH
+                                                myRef = database.getReference("Device/1/address");
+                                                myRef.setValue(latitude+ ", "+longtitude);
 
                                             } catch (JSONException e) {
                                                 e.printStackTrace();

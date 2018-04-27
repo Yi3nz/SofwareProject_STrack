@@ -17,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -34,32 +35,23 @@ import sarah.nci.ie.reminder.db_Firebase.Device;
 import sarah.nci.ie.reminder.db_Firebase.DeviceListAdapter;
 
 /*
- * Listview loaded from firebase.
+ * Listview retrieved from firebase.
  * Reference: https://www.youtube.com/watch?v=jEmq1B1gveM
- *
+ * Actionbar: https://www.journaldev.com/9357/android-actionbar-example-tutorial
  */
 public class Activity_Main extends AppCompatActivity {
-
-//    //For Firebase
-//    String value = null;
-//    String latitude, longtitude, utc_time;
-//    //New Firebase
-//    DatabaseReference dbDevice;
-//
-//    //Custom ListView declarations
-//    private static final String TAG = "Activity_Main";
-//    String deviceNickname;
 
     //Firebase listview
     DatabaseReference databaseDevices;
     ListView listViewDevices;
     List<Device> deviceList;
 
-//    ArrayList<Device> deviceArrayList;
-//    DeviceListAdapter adp;
-//    int position;
+    //Firebase CurrentLocation
+    DatabaseReference databaseLocations;
+    String value = null;
+    String latitude, longtitude, utc_time;
 
-    //Actionbar - Reference - https://www.journaldev.com/9357/android-actionbar-example-tutorial
+    //Actionbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -85,47 +77,58 @@ public class Activity_Main extends AppCompatActivity {
         return(super.onOptionsItemSelected(item));
     }
 
+    /*-----------------------------On create start-----------------------------*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        //Fetch data from Firebase
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference("Location");
-//        //New Firebase
-//        dbDevice = FirebaseDatabase.getInstance().getReference("Dddevice");
-//
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                value = dataSnapshot.getValue(String.class);
-//                //This line keeps goinggggggggg
-//                Toast.makeText(Activity_Main.this, value, Toast.LENGTH_LONG).show();
-//                //Extract the specefic keys from the json object.
-//                try {
-//                    JSONObject reader = new JSONObject(value);
-//
-//                    JSONObject gps_data  = reader.getJSONObject("gps_data");
-//                    latitude = gps_data.getString("Latitude");
-//                    longtitude = gps_data.getString("Longtitude");
-//                    utc_time = gps_data.getString("UTC Time");
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
         //Firebase - listView
         listViewDevices = (ListView) findViewById(R.id.listView);
-
         deviceList = new ArrayList<>();
         databaseDevices = FirebaseDatabase.getInstance().getReference("Device");
+
+        //OnItemClick - Open the Dialog
+        listViewDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Intent intent = new Intent();
+                intent.setClass(Activity_Main.this, Dialog_MainDialog.class);
+                intent.putExtra(Intent_Constants.INTENT_CA_DATA, deviceList.get(position).toString());
+                intent.putExtra(Intent_Constants.INTENT_ITEM_POSITION, position);
+                startActivityForResult(intent, Intent_Constants.INTENT_REQUEST_CODE_TWO);
+            }
+        });
+
+        /*----------------------------------Fetch LOCATION data start------------------------------*/
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        databaseLocations = database.getReference("Raw_Location");
+
+        databaseLocations.addValueEventListener(new ValueEventListener() {
+            @Override //On data change, do...
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                value = dataSnapshot.getValue(String.class);
+
+                try {//Extract the specefic keys from the json object.
+                    JSONObject reader = new JSONObject(value);
+
+                    JSONObject gps_data  = reader.getJSONObject("gps_data");
+                    latitude = gps_data.getString("Latitude");
+                    longtitude = gps_data.getString("Longtitude");
+                    utc_time = gps_data.getString("UTC Time");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //This line keeps goinggggggggg
+                Toast.makeText(Activity_Main.this, latitude + ", " + longtitude, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        /*----------------------------------Fetch data end------------------------------*/
 
     }
 

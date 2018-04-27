@@ -35,13 +35,14 @@ public class Activity_RegisterDevice extends AppCompatActivity {
 
     }
 
+
     //SaveButton - SaveAll
     public void saveAllClick(View v){
         //Get the text from the text field (Pass to Activity_Main)
         String name = etDeviceName.getText().toString().trim();
 
         //Grab the entered device name
-        Device device = new Device("Notshowingantway", name, "Current location",
+        Device device = new Device("Testing", name, "Current location",
                                     "???m", "extra");
         String id = dbDevice.push().getKey();
         dbDevice.child(id).setValue(device);
