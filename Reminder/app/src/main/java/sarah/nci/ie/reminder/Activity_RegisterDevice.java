@@ -1,66 +1,53 @@
 package sarah.nci.ie.reminder;
 
+/*
+ * Register a new device and store it in Firebase.
+ * Reference: https://www.youtube.com/watch?v=EM2x33g4syY
+ * 1. Define the Firebase references
+ * 2. On 'save' button clicked, store the data to Firebase.
+ */
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import sarah.nci.ie.reminder.db_Firebase.Device;
 
 public class Activity_RegisterDevice extends AppCompatActivity {
+
+    //Define Firebase
+    DatabaseReference dbDevice;
+    EditText etDeviceName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
+        //Define Firebase
+        dbDevice = FirebaseDatabase.getInstance().getReference("Device");
+        etDeviceName = (EditText)findViewById(R.id.etDeviceName);
+
     }
+
     //SaveButton - SaveAll
     public void saveAllClick(View v){
-        //Get the tex from all fields (Pass to Activity_Main)
-        String deviceNickname = ((EditText)findViewById(R.id.etDeviceName)).getText().toString();
-        /*
-        String caTitleText = ((EditText)findViewById(R.id.eTitle)).getText().toString();
-        String caSubjectText = ((Button)findViewById(R.id.btnSubject)).getText().toString();
-        String caDueDateText = date;*/
+        //Get the text from the text field (Pass to Activity_Main)
+        String name = etDeviceName.getText().toString().trim();
 
-        if(deviceNickname.equals("")){
-            //Check if the user is submitting empty Device title
-        }else{
-            Intent intent = new Intent();
-            intent.putExtra(Intent_Constants.INTENT_DEVICE_FIELD, deviceNickname);
-            /*
-            intent.putExtra(Intent_Constants.INTENT_CA_FIELD, caTitleText);
-            intent.putExtra(Intent_Constants.INTENT_SUBJECT_FIELD, caSubjectText);
-            intent.putExtra(Intent_Constants.INTENT_DUEDATE_FIELD, caDueDateText);*/
+        //Grab the entered device name
+        Device device = new Device("Notshowingantway", name, "Current location",
+                                    "???m", "extra");
+        String id = dbDevice.push().getKey();
+        dbDevice.child(id).setValue(device);
+        Toast.makeText(this, "New device "+name+" added", Toast.LENGTH_LONG).show();
+        finish();
 
-            setResult(Intent_Constants.INTENT_RESULT_CODE, intent);
-            finish();
-        }
     }
-
-    //TRYYYYY
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == Intent_Subject.INT_RQC_SUBJECT_SELECT){
-
-            /*
-            //ubject picker - Open DialogList
-            Button bSubject = (Button) findViewById(R.id.btnSubject);
-            bSubject.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(Activity_RegisterDevice.this, Dialog_MainDialog.class));
-                }
-            });
-
-            //Update button's text
-            Intent intent = getIntent();
-            selectedText = intent.getStringExtra(Intent_Subject.SELECT_SUBJECT_DATA);
-            bSubject.setText(selectedText);*/
-        }
-    }
-
 
 }

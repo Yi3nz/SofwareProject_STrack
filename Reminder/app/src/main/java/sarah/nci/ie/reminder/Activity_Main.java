@@ -27,21 +27,37 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+import sarah.nci.ie.reminder.db_Firebase.Device;
+import sarah.nci.ie.reminder.db_Firebase.DeviceListAdapter;
+
+/*
+ * Listview loaded from firebase.
+ * Reference: https://www.youtube.com/watch?v=jEmq1B1gveM
+ *
+ */
 public class Activity_Main extends AppCompatActivity {
 
-    //For Firebase
-    String value = null;
-    String latitude, longtitude, utc_time;
-    //Custom ListView declarations
-    private static final String TAG = "Activity_Main";
-    String deviceNickname;
+//    //For Firebase
+//    String value = null;
+//    String latitude, longtitude, utc_time;
+//    //New Firebase
+//    DatabaseReference dbDevice;
+//
+//    //Custom ListView declarations
+//    private static final String TAG = "Activity_Main";
+//    String deviceNickname;
 
-    ListView listView;
-    ArrayList<Device> deviceList;
-    DeviceListAdapter adp;
-    int position;
+    //Firebase listview
+    DatabaseReference databaseDevices;
+    ListView listViewDevices;
+    List<Device> deviceList;
+
+//    ArrayList<Device> deviceArrayList;
+//    DeviceListAdapter adp;
+//    int position;
 
     //Actionbar - Reference - https://www.journaldev.com/9357/android-actionbar-example-tutorial
     @Override
@@ -74,26 +90,66 @@ public class Activity_Main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Fetch data from Firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Location");
+//        //Fetch data from Firebase
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("Location");
+//        //New Firebase
+//        dbDevice = FirebaseDatabase.getInstance().getReference("Dddevice");
+//
+//        myRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                value = dataSnapshot.getValue(String.class);
+//                //This line keeps goinggggggggg
+//                Toast.makeText(Activity_Main.this, value, Toast.LENGTH_LONG).show();
+//                //Extract the specefic keys from the json object.
+//                try {
+//                    JSONObject reader = new JSONObject(value);
+//
+//                    JSONObject gps_data  = reader.getJSONObject("gps_data");
+//                    latitude = gps_data.getString("Latitude");
+//                    longtitude = gps_data.getString("Longtitude");
+//                    utc_time = gps_data.getString("UTC Time");
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
 
-        myRef.addValueEventListener(new ValueEventListener() {
+        //Firebase - listView
+        listViewDevices = (ListView) findViewById(R.id.listView);
+
+        deviceList = new ArrayList<>();
+        databaseDevices = FirebaseDatabase.getInstance().getReference("Device");
+
+    }
+
+    /*-----------------------------On create end-----------------------------*/
+
+    //Firebase listview
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        databaseDevices.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                value = dataSnapshot.getValue(String.class);
-                Toast.makeText(Activity_Main.this, value, Toast.LENGTH_LONG).show();
-                //Extract the specefic keys from the json object.
-                try {
-                    JSONObject reader = new JSONObject(value);
-
-                    JSONObject gps_data  = reader.getJSONObject("gps_data");
-                    latitude = gps_data.getString("Latitude");
-                    longtitude = gps_data.getString("Longtitude");
-                    utc_time = gps_data.getString("UTC Time");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            public void onDataChange(DataSnapshot dataSnapshot) { //Read the value
+                //Clear the list
+                deviceList.clear();
+                //Loop
+                for(DataSnapshot deviceSnapshot: dataSnapshot.getChildren()){
+                    Device device = deviceSnapshot.getValue(Device.class);
+                    //Store
+                    deviceList.add(device);
                 }
+                //Create a new adapter
+                DeviceListAdapter a = new DeviceListAdapter(Activity_Main.this, deviceList);
+                listViewDevices.setAdapter(a);
             }
 
             @Override
@@ -101,59 +157,6 @@ public class Activity_Main extends AppCompatActivity {
 
             }
         });
-
-        //Custom ListView
-        Log.d(TAG, "onCreate: Started.");
-
-        listView = (ListView) findViewById(R.id.listView);
-        deviceList = new ArrayList<>();
-        adp = new DeviceListAdapter(this, R.layout.activity_device_adapter, deviceList);
-        listView.setAdapter(adp);
-
-        //OnItemClick - Open the Dialog
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Intent intent = new Intent();
-                intent.setClass(Activity_Main.this, Dialog_MainDialog.class);
-                intent.putExtra(Intent_Constants.INTENT_CA_DATA, deviceList.get(position).toString());
-                intent.putExtra(Intent_Constants.INTENT_ITEM_POSITION, position);
-                startActivityForResult(intent, Intent_Constants.INTENT_REQUEST_CODE_TWO);
-            }
-        });
-
-        //Read and display the saved file - Reference https://www.youtube.com/watch?v=duHKgfl21BU
-        try{
-            Scanner sc = new Scanner(openFileInput("Device.txt"));
-
-            while(sc.hasNextLine()){
-                String data[] = sc.nextLine().split(" ");
-                    if(data.equals("")){
-                        break;
-                    }
-                    deviceList.add(new Device(data[0], data[0], data[0]));
-            }
-            sc.close();
-        }catch(FileNotFoundException e){
-            e.printStackTrace();
-        }
-
-    }
-
-    //Saving the added list - Reference https://www.youtube.com/watch?v=duHKgfl21BU
-    @Override
-    public void onBackPressed() {
-        try{
-            PrintWriter pw = new PrintWriter(openFileOutput("Device.txt", Context.MODE_PRIVATE));
-            for(Device data : deviceList){ //Pass each item of the list deviceList to data
-                pw.println(data);
-                System.out.println("Added: "+data); //I/System.out: Added: sarah.nci.ie.reminder.Device@b4efc34
-            }
-            pw.close();
-        }catch(FileNotFoundException e){
-            e.printStackTrace();
-        }
-        finish();
     }
 
     //FloatButton click - Go to scan QR code, and link to the add activity
@@ -179,26 +182,14 @@ public class Activity_Main extends AppCompatActivity {
             else {//Once scan completed...
                 Toast.makeText(this, "Success " + result.getContents(),Toast.LENGTH_LONG).show();
 
-                //Forward to the add activity
-                Intent intent = new Intent();
-                intent.setClass(this, Activity_RegisterDevice.class);
-                startActivityForResult(intent, Intent_Constants.INTENT_REQUEST_CODE);
+                //Forward to the add activity - activity_regirsterdevice
+                startActivity(new Intent(this, Activity_RegisterDevice.class));
             }
         }
         else {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
-        //For the add activity - pass the entered Strings to the listView in the mainActivity.
-        if(resultCode == Intent_Constants.INTENT_REQUEST_CODE){
-            /*Get the string from Activity_RegisterDevice
-            caTitleText = data.getStringExtra(Intent_Constants.INTENT_CA_FIELD);
-            caSubjectText = data.getStringExtra(Intent_Constants.INTENT_SUBJECT_FIELD);
-            caDueDateText = data.getStringExtra(Intent_Constants.INTENT_DUEDATE_FIELD);   */
-            deviceNickname = data.getStringExtra(Intent_Constants.INTENT_DEVICE_FIELD);
-            Device newDevice = new Device("At Pheonix Park", deviceNickname, latitude);
-            deviceList.add(newDevice);
-            adp.notifyDataSetChanged();
-        }
     }
+
 }
