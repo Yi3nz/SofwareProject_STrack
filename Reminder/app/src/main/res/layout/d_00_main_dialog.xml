@@ -16,24 +16,34 @@
     </ListView>
 -->
     <Button
-        android:id="@+id/btnCurrentLocation"
+        android:id="@+id/btnStartConnection"
         style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
         android:layout_width="match_parent"
         android:layout_height="85dp"
-        android:layout_weight="25"
+        android:layout_weight="20"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="Current Location" />
+        android:text="Start connection" />
 
+    <Button
+        android:id="@+id/btnDeviceMapView"
+        style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+        android:layout_width="match_parent"
+        android:layout_height="85dp"
+        android:layout_weight="20"
+        android:layout_below="@+id/btnStartConnection"
+        android:text="Map View" />
+
+<!--Set location-->
     <Button
         android:id="@+id/btnDefineSafetyZone"
         style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
         android:layout_width="match_parent"
         android:layout_height="85dp"
-        android:layout_below="@+id/btnCurrentLocation"
-        android:layout_weight="25"
-        android:text="Define Safety Zone" />
+        android:layout_below="@+id/btnDeviceMapView"
+        android:layout_weight="20"
+        android:text="Define safety zone (E.g.Home)" />
 
     <Button
         android:id="@+id/btnRemoteControls"
@@ -41,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="85dp"
         android:layout_below="@+id/btnDefineSafetyZone"
-        android:layout_weight="25"
+        android:layout_weight="20"
         android:text="Remote Controls" />
 
     <Button
@@ -50,6 +60,6 @@
         android:layout_width="match_parent"
         android:layout_height="85dp"
         android:layout_below="@+id/btnRemoteControls"
-        android:layout_weight="25"
+        android:layout_weight="20"
         android:text="Remove Device" />
 </RelativeLayout>

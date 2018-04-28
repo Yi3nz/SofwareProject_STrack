@@ -1,4 +1,4 @@
-package sarah.nci.ie.reminder;
+package sarah.nci.ie.reminder.listItem_Dialog;
 
 //Reference AndroidPubSubWebSocket_Example: https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSubWebSocket
 
@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
@@ -26,14 +25,16 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
-public class Dialog_Connect extends AppCompatActivity {
+import sarah.nci.ie.reminder.R;
+
+public class D_01_StartConnection extends AppCompatActivity {
 
     //Define Firebase
     FirebaseDatabase database;
     DatabaseReference myRef;
     //
 
-    static final String LOG_TAG = Dialog_Connect.class.getCanonicalName();
+    static final String LOG_TAG = D_01_StartConnection.class.getCanonicalName();
 
     // IOT Endpoint
     private static final String CUSTOMER_SPECIFIC_ENDPOINT = "ansingrsn5txz.iot.us-west-2.amazonaws.com";
@@ -57,9 +58,9 @@ public class Dialog_Connect extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_connect);
+        setContentView(R.layout.d_01_start_connection);
 
-        txtMessage = (EditText) findViewById(R.id.txtMessage);
+//        txtMessage = (EditText) findViewById(R.id.txtMessage);
 
         tvLastMessage = (TextView) findViewById(R.id.tvLastMessage);
         tvClientId = (TextView) findViewById(R.id.tvClientId);

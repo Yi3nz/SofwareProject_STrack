@@ -28,12 +28,12 @@
         <activity android:name=".Activity_Main" />
         <activity android:name=".Activity_RegisterDevice" />
         <activity
-            android:name=".Dialog_MainDialog"
+            android:name=".listItem_Dialog.D_00_MainDialog"
             android:theme="@style/AppTheme.SubjectDialogCustomTheme" />
-        <activity android:name=".Dialog_RemoteControl" />
-        <activity android:name=".Dialog_RemoveDevice" />
-        <activity android:name=".Action_Photo" />
-        <activity android:name=".Action_Gallery" />
+        <activity android:name=".listItem_Dialog.D_04_RemoteControl" />
+        <activity android:name=".listItem_Dialog.D_05_RemoveDevice" />
+        <activity android:name=".actionbar.Action_Photo" />
+        <activity android:name=".actionbar.Action_Gallery" />
 
         <!-- Scan QR code -->
         <activity android:name=".Activity_Scan_QR_Code" />
@@ -43,9 +43,9 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Dialog_CurrentLocation"
+            android:name=".listItem_Dialog.D_02_DeviceCurrentLocation"
             android:label="@string/title_activity_dialog__current_location" />
-        <activity android:name=".Dialog_Connect"></activity>
+        <activity android:name=".listItem_Dialog.D_01_StartConnection"></activity>
 
 
 

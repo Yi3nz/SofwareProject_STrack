@@ -1,9 +1,11 @@
-package sarah.nci.ie.reminder;
+package sarah.nci.ie.reminder.listItem_Dialog;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class Dialog_RemoteControl extends AppCompatActivity {
+import sarah.nci.ie.reminder.R;
+
+public class D_04_RemoteControl extends AppCompatActivity {
 
     String caText;
     String date;
@@ -12,7 +14,7 @@ public class Dialog_RemoteControl extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_remotecontrol);
+        setContentView(R.layout.d_04_remote_control);
 /*Comment out for testing
         //
         Intent intent = getIntent();

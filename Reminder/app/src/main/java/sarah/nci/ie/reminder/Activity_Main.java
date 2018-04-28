@@ -1,11 +1,9 @@
 package sarah.nci.ie.reminder;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +15,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -25,14 +22,14 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
+import sarah.nci.ie.reminder.actionbar.Action_Gallery;
+import sarah.nci.ie.reminder.actionbar.Action_Photo;
 import sarah.nci.ie.reminder.db_Firebase.Device;
 import sarah.nci.ie.reminder.db_Firebase.DeviceListAdapter;
+import sarah.nci.ie.reminder.listItem_Dialog.D_00_MainDialog;
 
 /*
  * Listview retrieved from firebase.
@@ -46,7 +43,7 @@ public class Activity_Main extends AppCompatActivity {
     ListView listViewDevices;
     List<Device> deviceList;
 
-    //Firebase CurrentLocation
+    //Firebase - Fetch device's CurrentLocation
     DatabaseReference databaseLocations;
     String value = null;
     String latitude, longtitude, utc_time;
@@ -93,7 +90,7 @@ public class Activity_Main extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent intent = new Intent();
-                intent.setClass(Activity_Main.this, Dialog_MainDialog.class);
+                intent.setClass(Activity_Main.this, D_00_MainDialog.class);
                 intent.putExtra(Intent_Constants.INTENT_CA_DATA, deviceList.get(position).toString());
                 intent.putExtra(Intent_Constants.INTENT_ITEM_POSITION, position);
                 startActivityForResult(intent, Intent_Constants.INTENT_REQUEST_CODE_TWO);
