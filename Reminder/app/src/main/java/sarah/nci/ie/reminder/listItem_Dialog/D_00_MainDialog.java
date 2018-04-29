@@ -44,7 +44,16 @@ import sarah.nci.ie.reminder.R;
  * Btn 5 - Remove device.
  *
  * EXTRA: Compute the distance between device's (Raspberrypi) current location & defined safety zone.
+ * On create: (Once listitem clicked)
  * 1. Fetch device's (RaspberryPi) current location from Firebase.
+ * 2. Grab the latest selected location's latitude for later usage.
+ * 3. Grab the latest selected location's longitude for later usage.
+ * 4. Compute and provide real-time distance changing.
+ * 5. Trigger the device (Raspberrypi) if distance < 50 meters.
+ *
+ * EXTRA2: Compute the initial distance once safety-zone selected.
+ * On btn 3's activity finished:
+ * 1. Push the selected safety-zone's location to Firebase Device/1/SafetyZone.
  * 2. Seperate safety_zone location into latitude & longitude.
  * 3. Compute the distance between them.
  * 4. Push the latest distance to Device/distance. (Which update the initial list-item's distance.)
@@ -55,7 +64,11 @@ public class D_00_MainDialog extends Activity {
     //Define the buttons
     Button btn01, btn02, btn03, btn04, btn05;
 
-    //PlacePicker
+    //Grab the latest selected location's latitude and longitude
+    double la, lo;
+    DatabaseReference dbDistance;
+
+    //PlacePicker - for Dialog 03: Select Safetyzone
     int PLACE_PICKER_REQUEST = 1;
 
     //Firebase - Push selected safety zone.
@@ -64,12 +77,15 @@ public class D_00_MainDialog extends Activity {
     //Firebase - Fetch device's CurrentLocation.
     DatabaseReference databaseLocations;
     String value = null;
-    String latitude, longtitude, utc_time;
+    String latitude, longtitude, utc_time; //To store the device's current location's data.
 
     //Define the distance
     float[] distance = new float[3];
-    double s_latitude;
+    float[] new_d = new float[3];
+    double s_latitude; //To store selected location's latitude
     double s_longitude;
+
+    String dis;
 
     /*******************************On create START********************************/
     @Override
@@ -141,12 +157,12 @@ public class D_00_MainDialog extends Activity {
             }
         });
 
-        /*----------------------------------Fetch LOCATION data start------------------------------*/
+        /*----------------------------------Fetch CURRENT LOCATION data start------------------------------*/
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseLocations = database.getReference("Raw_Location");
 
         databaseLocations.addValueEventListener(new ValueEventListener() {
-            @Override //On data change, do...
+            @Override //Everytime when device's current location is updated, fetch data...
             public void onDataChange(DataSnapshot dataSnapshot) {
                 value = dataSnapshot.getValue(String.class);
 
@@ -161,20 +177,73 @@ public class D_00_MainDialog extends Activity {
                     e.printStackTrace();
                 }
 
-                //Compute the distance
-                Location.distanceBetween( Double.parseDouble(latitude), Double.parseDouble(longtitude),
-                        s_latitude, s_longitude, distance);
+                //Grab the latest selected location's latitude for later usage.
+                dbDevice = FirebaseDatabase.getInstance().getReference("Device/1/SafetyZone/s_latitude");
 
-                //Push the distance data to the Firebase
-                dbDevice = FirebaseDatabase.getInstance().getReference("Device/1/distance");
-                dbDevice.setValue(distance[0]+"m");
+                dbDevice.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        la = dataSnapshot.getValue(double.class);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                //Grab the latest selected location's longtitude for later usage.
+                dbDevice = FirebaseDatabase.getInstance().getReference("Device/1/SafetyZone/s_longitude");
+                //Retrieve latest distance value from Firebase
+                dbDevice.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        lo = dataSnapshot.getValue(double.class);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                //Compute the latest distance between device's current location & selected safetyzone location.
+                //To provide real-time distance changing
+                dbDistance = FirebaseDatabase.getInstance().getReference("Device/1/distance");
+                dbDistance.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        //Compute the distance AGAIN.*
+                        Location.distanceBetween( Double.parseDouble(latitude), Double.parseDouble(longtitude),
+                                la, lo, new_d);
+
+                        //Push the distance data to the Firebase AGAIN.*
+                        dbDistance = FirebaseDatabase.getInstance().getReference("Device/1/distance");
+                        dbDistance.setValue(new_d[0]+"m");
+
+                        //If distance < 50m, trigger the alarm on the device (Raspberrypi)
+                        //By Sending 'on' or 'off' to Firebase.
+                        if(new_d[0] < 50){
+                            dbDistance = FirebaseDatabase.getInstance().getReference("Device/1/extra");
+                            dbDistance.setValue("on");
+                        }else{
+                            dbDistance = FirebaseDatabase.getInstance().getReference("Device/1/extra");
+                            dbDistance.setValue("off");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        /*----------------------------------Fetch LOCATION data end------------------------------*/
+        /*----------------------------------Fetch CURRENT LOCATION data end------------------------------*/
 
     }
 
@@ -205,6 +274,15 @@ public class D_00_MainDialog extends Activity {
             dbDevice.setValue(s_latitude);
             dbDevice = FirebaseDatabase.getInstance().getReference("Device/1/SafetyZone/s_longitude");
             dbDevice.setValue(s_longitude);
+
+            //Compute the distance
+            Location.distanceBetween( Double.parseDouble(latitude), Double.parseDouble(longtitude),
+                    s_latitude, s_longitude, distance);
+
+            //Push the distance data to the Firebase
+            dbDevice = FirebaseDatabase.getInstance().getReference("Device/1/distance");
+            dbDevice.setValue(distance[0]+"m");
+
 
             //Toast for confirmation.
             Toast.makeText(this, "Added "+ address,Toast.LENGTH_LONG).show();

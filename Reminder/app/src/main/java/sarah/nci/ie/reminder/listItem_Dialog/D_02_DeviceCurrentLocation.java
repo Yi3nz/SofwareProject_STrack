@@ -9,6 +9,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,17 +22,24 @@ import org.json.JSONObject;
 
 import sarah.nci.ie.reminder.R;
 
+/*
+ * Display device current location on a map.
+ * Reference: https://developers.google.com/maps/documentation/android-api/marker
+ *
+ * 1.
+ * 2.
+ * 3.
+ */
 public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    String str;
-    double dLat;
-    double dLong;
+    MarkerOptions m;
+    Marker myMarker;
 
     //Firebase CurrentLocation
     DatabaseReference databaseLocations;
     String value = null;
-    Double latitude, longtitude;
+    double latitude, longitude;
     String utc_time;
 
     @Override
@@ -42,10 +50,6 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        //
-        dLat = 53.352218333;
-        dLong = -6.25159;
 
         /*----------------------------------Fetch LOCATION data start------------------------------*/
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -61,13 +65,19 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
 
                     JSONObject gps_data  = reader.getJSONObject("gps_data");
                     latitude = gps_data.getDouble("Latitude");
-                    longtitude = gps_data.getDouble("Longtitude");
+                    longitude = gps_data.getDouble("Longtitude");
                     utc_time = gps_data.getString("UTC Time");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 //This line keeps goinggggggggg
-                Toast.makeText(D_02_DeviceCurrentLocation.this, "Updated: " + latitude + ", " + longtitude, Toast.LENGTH_LONG).show();
+                Toast.makeText(D_02_DeviceCurrentLocation.this, "Updated: " + latitude + ", " + longitude, Toast.LENGTH_LONG).show();
+
+                //Update the marker's location
+                LatLng device_updated_location = new LatLng(latitude, longitude);
+                myMarker.setPosition(device_updated_location);
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(device_updated_location));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
             }
 
             @Override
@@ -98,9 +108,13 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(dLat, dLong);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng device_current_location = new LatLng(latitude, longitude);
+
+        //Set maker option
+        m = new MarkerOptions().position(device_current_location).title("Current location");
+        myMarker = mMap.addMarker(m);
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(device_current_location));
 
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
     }
