@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:pointerIcon="wait">
 
-    <!--For STrack-->
+    <!--Define device's name-->
     <TextView
         android:id="@+id/tvDeviceName"
         android:layout_width="wrap_content"
@@ -32,19 +32,7 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="45dp" />
 
-    <TextView
-        android:id="@+id/tvConfirmHome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tvDeviceName"
-        android:layout_alignStart="@+id/tvDeviceName"
-        android:layout_below="@+id/etDeviceName"
-        android:text="Confirm the device's home location"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="90dp" />
-<!--
+    <!--Define the initial safety-zone-->
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
@@ -53,110 +41,20 @@
         android:layout_centerHorizontal="true"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="115dp" />
--->
-    <ImageView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="305dp"
-        android:background="@drawable/test_map"
-        android:layout_below="@+id/tvConfirmHome"
-        android:layout_centerHorizontal="true"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="115dp" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:background="@color/colorAccent"
-        android:onClick="saveAllClick"
-        android:text="@string/btnSaveCA"
+        android:onClick="registerClick"
+        android:text="Register"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="434dp" />
 
-    <!--Select subject & date - Reference https://www.youtube.com/watch?v=9eTK8ZOBJsQ-->
-    <!--
-    <LinearLayout
-        android:id="@+id/lTop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnSubject"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="@drawable/border_button"
-            android:drawableLeft="@drawable/icon_subject"
-            android:paddingLeft="10dp"
-            android:text="@string/btnTextSubject"
-            android:onClick="showDialogSubjectList"/>
 
-        <Button
-            android:id="@+id/btnDueDate"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="@drawable/border_button"
-            android:drawableLeft="@drawable/icon_date"
-            android:paddingLeft="10dp"
-            android:text="@string/btnTextDuedate" />
-
-    </LinearLayout>
-
-    <EditText
-        android:id="@+id/eTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/lTop"
-        android:layout_marginTop="20dp"
-        android:hint="@string/hintCATitle"
-        android:inputType="textPersonName" />
-
-    <EditText
-        android:id="@+id/eAdditionalNote"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/eTitle"
-        android:layout_marginTop="40dp"
-        android:hint="@string/hint_CANotes"
-        android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/eAdditionalNote"
-        android:layout_marginTop="60dp"
-        android:background="#f06292"
-        android:onClick="saveAllClick"
-        android:text="@string/btnSaveCA" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="49dp"
-        android:background="@color/colorPrimary"
-        android:onClick="refresh"
-        android:text="Refresh"
-        android:textColor="@android:color/background_dark" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button3"
-        android:layout_centerHorizontal="true"
-        android:textAlignment="center"
-        android:text="@string/addActicity_reminder" />
--->
 </LinearLayout>

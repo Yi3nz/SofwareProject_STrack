@@ -35,6 +35,7 @@ public class DeviceListAdapter extends ArrayAdapter<Device>{
         this.deviceList = deviceList;
     }
 
+    //Overwrite the getView method
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -44,10 +45,10 @@ public class DeviceListAdapter extends ArrayAdapter<Device>{
         View listViewItem = inflater.inflate(R.layout.activity_device_adapter, null, true);
 
         //Link to the textviews in the xml.
+        TextView tvNickname = (TextView)listViewItem.findViewById(R.id.tvNickname);
         TextView tvAddress = (TextView)listViewItem.findViewById(R.id.tvAddress);
         TextView tvDistance = (TextView)listViewItem.findViewById(R.id.tvDistance);
         TextView tvExtra = (TextView)listViewItem.findViewById(R.id.tvExtra);
-        TextView tvNickname = (TextView)listViewItem.findViewById(R.id.tvNickname);
 
         //Get the device on position
         Device device = deviceList.get(position);

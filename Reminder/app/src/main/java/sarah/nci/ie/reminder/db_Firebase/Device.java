@@ -1,22 +1,34 @@
 package sarah.nci.ie.reminder.db_Firebase;
 
 /**
- * Created by User on 11/20/2017.
+ * Define the device's attributes.
+ * Each device'll contains a deviceId, nickname, address, distance, extra;
  */
 
 public class Device {
-    private String name, nickname, address, distance, extra;
+    private String deviceId, nickname, qrCode, address, latitude, longitude, distance, extra;
 
     public Device(){
 
     }
 
-    public Device(String name, String nickname, String address, String distance, String extra) {
-        this.name = name;
+    public Device(String deviceId, String nickname, String qrCode, String address, String latitude, String longitude, String distance, String extra) {
+        this.deviceId = deviceId;
         this.nickname = nickname;
+        this.qrCode = qrCode;
         this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.distance = distance;
         this.extra = extra;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getNickname() {
@@ -27,12 +39,12 @@ public class Device {
         this.nickname = nickname;
     }
 
-    public String getName() {
-        return name;
+    public String getQrCode() {
+        return qrCode;
     }
 
-    public void setName(String name) {
-        name = name;
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 
     public String getAddress() {
@@ -41,6 +53,22 @@ public class Device {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     public String getDistance() {

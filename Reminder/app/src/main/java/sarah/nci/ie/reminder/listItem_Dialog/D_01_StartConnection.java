@@ -1,7 +1,5 @@
 package sarah.nci.ie.reminder.listItem_Dialog;
 
-//Reference AndroidPubSubWebSocket_Example: https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSubWebSocket
-
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,12 +25,15 @@ import java.util.UUID;
 
 import sarah.nci.ie.reminder.R;
 
+/* Connect & Subscribe to AWS MQTT topic
+ * Reference AndroidPubSubWebSocket_Example: https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSubWebSocket
+ *
+ */
 public class D_01_StartConnection extends AppCompatActivity {
 
     //Define Firebase
     FirebaseDatabase database;
     DatabaseReference myRef;
-    //
 
     static final String LOG_TAG = D_01_StartConnection.class.getCanonicalName();
 
@@ -43,9 +44,8 @@ public class D_01_StartConnection extends AppCompatActivity {
     // Used region of AWS IoT
     private static final Regions MY_REGION = Regions.US_WEST_2;
 
-    EditText txtSubscribe, txtTopic, txtMessage;
     TextView tvLastMessage, tvClientId, tvStatus;
-    Button btnConnect, btnSubscribe, btnPublish, btnDisconnect;
+    Button btnSubscribe, btnDisconnect;
 
     AWSIotMqttManager mqttManager;
     String clientId;
@@ -59,8 +59,6 @@ public class D_01_StartConnection extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.d_01_start_connection);
-
-//        txtMessage = (EditText) findViewById(R.id.txtMessage);
 
         tvLastMessage = (TextView) findViewById(R.id.tvLastMessage);
         tvClientId = (TextView) findViewById(R.id.tvClientId);
@@ -176,16 +174,27 @@ public class D_01_StartConnection extends AppCompatActivity {
                                                 database = FirebaseDatabase.getInstance();
                                                 myRef = database.getReference("Raw_Location");
                                                 myRef.setValue(message);
-                                                //Send the queried json message to Firebase - Location
-                                                myRef = database.getReference("Location/Latitude");
-                                                myRef.setValue(latitude);
-                                                myRef = database.getReference("Location/Longtitude");
-                                                myRef.setValue(longtitude);
-                                                myRef = database.getReference("Location/Utc time");
-                                                myRef.setValue(utc_time);
+//                                                //Send the queried json message to Firebase - Location
+//                                                myRef = database.getReference("Location/Latitude");
+//                                                myRef.setValue(latitude);
+//                                                myRef = database.getReference("Location/Longtitude");
+//                                                myRef.setValue(longtitude);
+//                                                myRef = database.getReference("Location/Utc time");
+//                                                myRef.setValue(utc_time);
 //                                                //Send the extracted message to Firebase - Device/LB7ujxfEps5uYAfmmaH
-                                                myRef = database.getReference("Device/1/address");
+                                                myRef = database.getReference("Device/-LBlJmnxJkrIwDtNNKkP/address");
                                                 myRef.setValue(latitude+ ", "+longtitude);
+                                                //Send to la & lo
+                                                myRef = database.getReference("Device/-LBlJmnxJkrIwDtNNKkP/latitude");
+                                                myRef.setValue(latitude);
+                                                myRef = database.getReference("Device/-LBlJmnxJkrIwDtNNKkP/longitude");
+                                                myRef.setValue(longtitude);
+
+                                                myRef = database.getReference("Device/-LBlfveZ6rfJ6ab8I5yH/latitude");
+                                                myRef.setValue(latitude);
+                                                myRef = database.getReference("Device/-LBlfveZ6rfJ6ab8I5yH/longitude");
+                                                myRef.setValue(longtitude);
+
 
                                             } catch (JSONException e) {
                                                 e.printStackTrace();

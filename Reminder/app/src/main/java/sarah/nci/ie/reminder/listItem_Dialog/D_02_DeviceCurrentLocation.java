@@ -23,12 +23,13 @@ import org.json.JSONObject;
 import sarah.nci.ie.reminder.R;
 
 /*
- * Display device current location on a map.
+ * Display device's (RaspberryPi) current location on a map.
  * Reference: https://developers.google.com/maps/documentation/android-api/marker
  *
- * 1.
- * 2.
- * 3.
+ * 1. On Map ready, set a maker on the map.
+ * 2. OnCreate:
+ *             Fetch the latest raw_location from Firebase.
+ *             Update the marker's location based on the latest data fetched.
  */
 public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMapReadyCallback {
 
@@ -46,12 +47,13 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.d_02_device_current_location);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        /*----------------------------------Fetch LOCATION data start------------------------------*/
+        /*----------------------------------Fetch CURRENT LOCATION data start------------------------------*/
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseLocations = database.getReference("Raw_Location");
 
@@ -85,7 +87,7 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
 
             }
         });
-        /*----------------------------------Fetch data end------------------------------*/
+        /*----------------------------------Fetch CURRENT LOCATION data end------------------------------*/
 
     }
 
