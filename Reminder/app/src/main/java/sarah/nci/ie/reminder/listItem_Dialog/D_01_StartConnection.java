@@ -170,37 +170,30 @@ public class D_01_StartConnection extends AppCompatActivity {
                                         try {
                                             mqttMessage = new String(data, "UTF-8");
 
-                                            //Extract the specefic keys from the json object.
+                                            //Extract the specefic keys from the json object retrieved from MQTT.
                                             try {
                                                 JSONObject reader = new JSONObject(mqttMessage);
-
                                                 JSONObject gps_data  = reader.getJSONObject("gps_data");
                                                 latitude = gps_data.getString("Latitude");
                                                 longtitude = gps_data.getString("Longtitude");
                                                 utc_time = gps_data.getString("UTC Time");
 
-
-                                                myRef = FirebaseDatabase.getInstance().getReference("Raw_Location");
-                                                myRef.setValue(mqttMessage);
-
-//                                                myRef = database.getReference("Location/Utc time");
-//                                                myRef.setValue(utc_time);
-//                                              //Update the address
-                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/address");
-                                                myRef.setValue(latitude+ ", "+longtitude);
-
-                                                //Update the la & lo
-                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/latitude");
+                                                //Update the particular device's current_location
+                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/Current location/Latitude");
                                                 myRef.setValue(latitude);
-                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/longitude");
+                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/Current location/Longitude");
                                                 myRef.setValue(longtitude);
+                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/Current location/Local Time");
+                                                myRef.setValue(utc_time);
+                                                //Update the particular device's address
+                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/address");
+                                                myRef.setValue(latitude+ ", " +longtitude);
 
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
 
-
-                                            tvLastMessage.setText(latitude + " " + longtitude + " " + utc_time);
+                                            tvLastMessage.setText("Updated: " +latitude+ " " +longtitude+ " " +utc_time);
 
                                         } catch (UnsupportedEncodingException e) {
                                             Log.e(LOG_TAG, "Message encoding error.", e);

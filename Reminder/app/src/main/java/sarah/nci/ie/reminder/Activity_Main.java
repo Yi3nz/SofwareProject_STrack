@@ -218,7 +218,7 @@ public class Activity_Main extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             }
 
-            @Override //When 'Device/everyId/address' is updated...
+            @Override //When 'Device/everyId/CurrentLocation' is updated...
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
                 //Compute and update the latest distance.
@@ -362,8 +362,14 @@ public class Activity_Main extends AppCompatActivity {
         if (dataSnapshot.child("SafetyZone").exists()) {
 
             //Grab latest current location & safety_zone location
-            double current_latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue(String.class));
-            double current_longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue(String.class));
+//            if (dataSnapshot.child("Current location/Latitude").exists()) {
+//                double current_latitude = Double.parseDouble(dataSnapshot.child("Current location/Latitude").getValue(String.class));
+//            }
+//            if (dataSnapshot.child("Current location/Latitude").exists()) {
+//                double current_latitude = Double.parseDouble(dataSnapshot.child("Current location/Longitude").getValue(String.class));
+//            }
+            double current_latitude = Double.parseDouble(dataSnapshot.child("Current location/Latitude").getValue(String.class));
+            double current_longitude = Double.parseDouble(dataSnapshot.child("Current location/Longitude").getValue(String.class));
 
             //Check if the safety_zone's latitude & longitude is updated before processing:
             if (dataSnapshot.child("SafetyZone/s_latitude").exists()) {

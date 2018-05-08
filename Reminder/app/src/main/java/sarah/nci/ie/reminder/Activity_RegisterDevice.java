@@ -54,8 +54,7 @@ public class Activity_RegisterDevice extends AppCompatActivity {
 
             //Grab the entered device name
             Device device = new Device(deviceId, name, "null",
-                    "Current address", "latitude", "longitude",
-                    "???m", "extra");
+                    "Current address", "...m", "extra");
 
             //Store this device into the specific 'id' in the Firebase
             dbDevice.child(deviceId).setValue(device);

@@ -6,19 +6,17 @@ package sarah.nci.ie.reminder.db_Firebase;
  */
 
 public class Device {
-    private String deviceId, nickname, qrCode, address, latitude, longitude, distance, extra;
+    private String deviceId, nickname, qrCode, address, distance, extra;
 
     public Device(){
 
     }
 
-    public Device(String deviceId, String nickname, String qrCode, String address, String latitude, String longitude, String distance, String extra) {
+    public Device(String deviceId, String nickname, String qrCode, String address, String distance, String extra) {
         this.deviceId = deviceId;
         this.nickname = nickname;
         this.qrCode = qrCode;
         this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.distance = distance;
         this.extra = extra;
     }
@@ -53,22 +51,6 @@ public class Device {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
     }
 
     public String getDistance() {

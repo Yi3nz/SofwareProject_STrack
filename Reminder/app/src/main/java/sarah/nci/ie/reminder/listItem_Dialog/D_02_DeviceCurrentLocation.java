@@ -12,6 +12,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,12 +41,11 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
 
     //Retrieve the intent
     String deviceId, deviceName;
+    double current_latitude;
+    double current_longitude;
 
     //Firebase CurrentLocation
     DatabaseReference databaseLocations;
-    String value = null;
-    double latitude, longitude;
-    String utc_time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,37 +59,48 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
         deviceName = intent.getStringExtra(D_00_MainDialog.DEVICE_NAME);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         /*----------------------------------Fetch CURRENT LOCATION data start------------------------------*/
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        databaseLocations = database.getReference("Raw_Location");
+        databaseLocations = FirebaseDatabase.getInstance().getReference("Device");
+        databaseLocations.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-        databaseLocations.addValueEventListener(new ValueEventListener() {
-            @Override //On data change, do...
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                value = dataSnapshot.getValue(String.class);
+            }
 
-                try {//Extract the specefic keys from the json object.
-                    JSONObject reader = new JSONObject(value);
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                //Check if the safety_zone's latitude & longitude is updated before processing:
+                if (dataSnapshot.child("Current location/Latitude").exists() && dataSnapshot.child("Current location/Longitude").exists()) {
+                    current_latitude = Double.parseDouble(dataSnapshot.child("Current location/Latitude").getValue(String.class));
+                    current_longitude = Double.parseDouble(dataSnapshot.child("Current location/Longitude").getValue(String.class));
 
-                    JSONObject gps_data  = reader.getJSONObject("gps_data");
-                    latitude = gps_data.getDouble("Latitude");
-                    longitude = gps_data.getDouble("Longtitude");
-                    utc_time = gps_data.getString("UTC Time");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    //Toast confirmation
+                    Toast.makeText(D_02_DeviceCurrentLocation.this, "Updated: " + current_latitude + ", " + current_longitude, Toast.LENGTH_LONG).show();
+
+                    //Update the marker's location
+                    LatLng device_updated_location = new LatLng(current_latitude, current_longitude);
+                    myMarker.setPosition(device_updated_location);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(device_updated_location));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
                 }
-                //This line keeps goinggggggggg
-                Toast.makeText(D_02_DeviceCurrentLocation.this, "Updated: " + latitude + ", " + longitude, Toast.LENGTH_LONG).show();
+//                if(dataSnapshot.child("SafetyZone/s_longitude").exists()) {
+//                    current_longitude = Double.parseDouble(dataSnapshot.child("Current location/Longitude").getValue(String.class));
+//                }
 
-                //Update the marker's location
-                LatLng device_updated_location = new LatLng(latitude, longitude);
-                myMarker.setPosition(device_updated_location);
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(device_updated_location));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -97,14 +108,10 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
 
             }
         });
+
         /*----------------------------------Fetch CURRENT LOCATION data end------------------------------*/
 
     }
-
-    /*-----------------------------On create end-----------------------------*/
-
-
-
 
     /**
      * Manipulates the map once available.
@@ -120,7 +127,7 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng device_current_location = new LatLng(latitude, longitude);
+        LatLng device_current_location = new LatLng(0.0, 0.0);
 
         //Set maker option
         m = new MarkerOptions().position(device_current_location).title("Current location");
