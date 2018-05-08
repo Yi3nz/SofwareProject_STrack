@@ -9,7 +9,6 @@ package sarah.nci.ie.reminder;
  * 2. On 'register' button clicked, store the data to Firebase with a unique key.
  */
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -33,7 +32,7 @@ public class Activity_RegisterDevice extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add);
+        setContentView(R.layout.activity_register);
 
         //Define Firebase
         dbDevice = FirebaseDatabase.getInstance().getReference("Device");

@@ -1,5 +1,6 @@
 package sarah.nci.ie.reminder.listItem_Dialog;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -37,6 +38,9 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
     MarkerOptions m;
     Marker myMarker;
 
+    //Retrieve the intent
+    String deviceId, deviceName;
+
     //Firebase CurrentLocation
     DatabaseReference databaseLocations;
     String value = null;
@@ -47,6 +51,12 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.d_02_device_current_location);
+
+        //Get the intent from the D_00_MainDialogActivity
+        Intent intent = getIntent();
+        //Retrieve the particular device's id & name
+        deviceId = intent.getStringExtra(D_00_MainDialog.DEVICE_ID);
+        deviceName = intent.getStringExtra(D_00_MainDialog.DEVICE_NAME);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()

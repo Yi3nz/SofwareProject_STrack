@@ -41,37 +41,44 @@ import sarah.nci.ie.reminder.db_Firebase.DeviceListAdapter;
 import sarah.nci.ie.reminder.listItem_Dialog.D_00_MainDialog;
 
 /*
- * Listview retrieved from firebase.
- * Reference: https://www.youtube.com/watch?v=jEmq1B1gveM
+ * Listview retrieved from firebase reference: https://www.youtube.com/watch?v=jEmq1B1gveM
  * Actionbar reference: https://www.journaldev.com/9357/android-actionbar-example-tutorial
  * Update deviceName onLongItemClick reference: https://www.youtube.com/watch?v=2bYWf0z8_8s&index=4&list=PLk7v1Z2rk4hj6SDHf_YybDeVhUT9MXaj1
+ * Real-time update the listView if child-change reference: https://stackoverflow.com/questions/46690220/data-is-getting-added-into-list-instead-of-getting-updated-in-addchildeventliste
+ *
+ *
  */
 public class Activity_Main extends AppCompatActivity {
-    DeviceListAdapter a;
-    //Firebase listview
+
+    //Define Firebase's database reference
     DatabaseReference databaseDevices;
 
+    //Define a listView connected to Activity_main's listView
     ListView listViewDevices;
+    //Define a adapter for the listView
+    DeviceListAdapter adapter;
+
     //Define a new list to store fetched device data.
     List<Device> devices;
     //List to store each device's deviceId
     List<String> eachDevice_ID;
 
-    //String checkTheid;
-    private static final String TAG = "MainAc";
+    double safety_latitude = 0.0;
+    double safety_longitude = 0.0;
 
-    //Device Item
+    //To store intent's extra for D_00_MainDialog
     public static final String DEVICE_NAME = "deviceName";
     public static final String DEVICE_ID = "deviceId";
 
-    //Actionbar
+    //Actionbar - onCreate
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-    //Actionbar - Continue
+
+    //Actionbar - OnItemClicked
     @Override
     public boolean onOptionsItemSelected(MenuItem item) { switch(item.getItemId()) {
         case R.id.photo:
@@ -96,20 +103,21 @@ public class Activity_Main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Firebase - listView
+        //Define Firebase's database reference -Listen to 'Device/everyId'
         databaseDevices = FirebaseDatabase.getInstance().getReference("Device");
+        //Define a listView connected to Activity_main's listView
         listViewDevices = (ListView) findViewById(R.id.listView);
+
         //Define a new list to store fetched device data.
         devices = new ArrayList<>();
         //Define a list to store every device's id
         eachDevice_ID = new ArrayList<>();
-        //Create a new adapter
-        a = new DeviceListAdapter(Activity_Main.this, devices);
-        listViewDevices.setAdapter(a);
 
+        //Define the adapter
+        adapter = new DeviceListAdapter(Activity_Main.this, devices);
+        listViewDevices.setAdapter(adapter);
 
-
-        //OnItemClick - Open the Main Dialog
+        //On ListViewItemClick - Open the D_00_MainDialog
         listViewDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -123,51 +131,43 @@ public class Activity_Main extends AppCompatActivity {
                 intent.putExtra(DEVICE_ID, device.getDeviceId());
                 intent.putExtra(DEVICE_NAME, device.getNickname());
 
-                intent.putExtra(Intent_Constants.INTENT_CA_DATA, devices.get(position).toString());
-                intent.putExtra(Intent_Constants.INTENT_ITEM_POSITION, position);
-                startActivityForResult(intent, Intent_Constants.INTENT_REQUEST_CODE_TWO);
+                startActivity(intent);
             }
         });
 
-        //On longclick listerner
+        //On ListViewItemLongClick - open showUpdateDialog
         listViewDevices.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //Get the particular device
                 Device device = devices.get(position);
                 //Get the original id and nickname of the device
-                showUpdateDidalog(device.getDeviceId(), device.getNickname());
+                showUpdateDialog(device.getDeviceId(), device.getNickname());
                 //Return true to prevent opening the main dialog
                 return true;
             }
         });
 
-        // Listen to 'Device': Initialize the listView and deviceIdList
-        // Update them only if new device is added through scanning QRcode
+        // Listen to 'Device': Initialize the listView and deviceIdList.
+        // Update them only if new device is added through scanning QRcode.
+        // Update the changes real-time on name update & device delete.
         databaseDevices.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-
-                Log.i(TAG, "Striing?: "+ dataSnapshot.getValue(Device.class));
-                Log.i(TAG, "Another?: "+ dataSnapshot.getValue());
-
-                //Fetch the listView.
+                //Create the listView.
                 Device device = dataSnapshot.getValue(Device.class);
                 devices.add(device);
 
                 //Fetch each ID of listItem.
                 eachDevice_ID.add(dataSnapshot.getKey().toString());
-                //Check if list correct
-                for(int i=0; i < eachDevice_ID.size(); i++){
-                    Log.i(TAG, "Size: "+eachDevice_ID.size()+". The ID of the device in 1st listerner: "+ eachDevice_ID.get(i));
-                }
+
                 //Notify
-                a.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                //Real-time updating once changed name Reference: https://stackoverflow.com/questions/46690220/data-is-getting-added-into-list-instead-of-getting-updated-in-addchildeventliste
+                //Real-time updating the list once changed name.
                 Device newNameDevice = dataSnapshot.getValue(Device.class);
 
                 //Grab current key; Find index in existing list, set Name.
@@ -176,19 +176,20 @@ public class Activity_Main extends AppCompatActivity {
                 devices.set(index, newNameDevice);
 
                 //Notify
-                a.notifyDataSetChanged();
-
-                /*----------------------------------Fetch CURRENT LOCATION data start------*/
-
+                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                //Remove
-                Device deleteDevice = dataSnapshot.getValue(Device.class);
+                //Real-time updating the list once deleted.
+                //Grab current key; Find index in existing list, remove the value in the deviceList & idList.
+                String key = dataSnapshot.getKey();
+                int index = eachDevice_ID.indexOf(key);
+                devices.remove(index);
+                eachDevice_ID.remove(index);
 
                 //Notify
-                a.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -206,61 +207,25 @@ public class Activity_Main extends AppCompatActivity {
     /*-----------------------------On create end-----------------------------*/
 
 
+    //On start, real-time compute and update every device's latest distance
     @Override
     protected void onStart() {
         super.onStart();
 
-        //NEW try - Listen to 'Device'
+        //Listen to 'Device/everyId'
         databaseDevices.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             }
 
-            @Override //When 'Device/address' changed
+            @Override //When 'Device/everyId/address' is updated...
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                //Listen to 'Raw location' and fetch current device's location
 
-                /*----------------------------------Fetch CURRENT LOCATION data start------------------------------*/
-
-                Log.i(TAG, "Key before "+ dataSnapshot.getKey());
-
-                //IF the safety_zone is defined:
-                if (dataSnapshot.child("SafetyZone").exists()) {
-                    Log.i(TAG, "Key after "+ dataSnapshot.getKey()); //Returns 1
-
-                    //Grab each device's safetyLatitude and longitude
-                    double safety_latitude = dataSnapshot.child("SafetyZone/s_latitude").getValue(Double.class);
-                    double safety_longitude = dataSnapshot.child("SafetyZone/s_longitude").getValue(Double.class);
-                    Log.i(TAG, "Safe_LOCATION: "+ safety_latitude+", "+safety_longitude); //Returns
-
-                    //
-                    double current_latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue(String.class));
-                    double current_longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue(String.class));
-                    Log.i(TAG, "DEVICE_LOCATION: "+ current_latitude+", "+current_longitude); //Returns
-
-                    //Compute the latest distance
-                    float[] new_d = new float[3];
-                    Location.distanceBetween(current_latitude, current_longitude,
-                                            safety_latitude, safety_longitude, new_d);
-                    Log.i(TAG, "DISTANCE: "+ new_d[0]);
-
-                    //Push the distance data to the Firebase AGAIN.* //("Device/" +deviceId+ "/distance");
-                    dataSnapshot.child("distance").getRef().setValue(new_d[0] + "m");
-
-                    //If distance < 50m, trigger the alarm on the device (Raspberrypi)
-                    //By Sending 'on' or 'off' to Firebase.
-                    if(new_d[0] < 50){
-                        dataSnapshot.child("extra").getRef().setValue("on");
-                    }else{
-                        dataSnapshot.child("extra").getRef().setValue("off");
-                    }
-
-
-                }
-                /*----------------------------------Fetch CURRENT LOCATION data end------------------------------*/
+                //Compute and update the latest distance.
+                computeLatestDistance(dataSnapshot);
 
                 //Notify
-                a.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
 
 
@@ -280,17 +245,11 @@ public class Activity_Main extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
-
     }
 
     //FloatButton click - Go to scan QR code, and link to the add activity
-    final Activity activity = this;
     public void addClick(View v){
+        final Activity activity = this;
         IntentIntegrator integrator = new IntentIntegrator(activity);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
         integrator.setPrompt("Scan");
@@ -322,21 +281,22 @@ public class Activity_Main extends AppCompatActivity {
 
     }
 
-    //Function - Update the device's nickName.
-    private void showUpdateDidalog(final String deviceId, String deviceName){
-        //
+    //Function - Update the device's nickName / delete the device.
+    private void showUpdateDialog(final String deviceId, String deviceName){
+        //Define an alert dialog
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        //
+
+        //Define the view's xml
         final View dialogView = inflater.inflate(R.layout.activity_main_update, null);
         dialogBuilder.setView(dialogView);
-
+        //Define the xml's objects
         final EditText etUpdateName = (EditText)dialogView.findViewById(R.id.etUpdateName);
         final Button btnUpdateName = (Button)dialogView.findViewById(R.id.btnUpdateName);
         final Button btnDeleteDevice = (Button)dialogView.findViewById(R.id.btnDeleteDevice);
 
         //Set the title of the dialog (include the original name of the device)
-        dialogBuilder.setTitle("Updating Device "+deviceId);
+        dialogBuilder.setTitle("Updating Device "+deviceName);
         //Create & show the dialog
         final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
@@ -345,7 +305,7 @@ public class Activity_Main extends AppCompatActivity {
         btnUpdateName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Grab the new entered name
+                //Grab the entered name
                 String name = etUpdateName.getText().toString().trim();
 
                 //Check if name is empty
@@ -375,98 +335,64 @@ public class Activity_Main extends AppCompatActivity {
 
     }
 
-    //Functon - Delete the device.
+    //Function - Update the nickname. (Used in function - showUpdateDialog)
+    private boolean updateDeviceName(String deviceId, String newName){
+        //Point the databaseReference to the 'nickname' in the Device's Json.
+        DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference("Device/"+deviceId+"/nickname");
+        //Update the nickname to new value
+        dbReference.setValue(newName);
+        //Confimation message
+        Toast.makeText(this, "Device updated.", Toast.LENGTH_LONG).show();
+        return true;
+    }
+
+    //Functon - Delete the device. (Used in function - showUpdateDialog)
     private void deleteDevice(String deviceId) {
         //Point the databaseReference to the 'nickname' in the Device's Json.
         DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference("Device/"+deviceId);
         //Update the nickname to new value
         dbReference.removeValue();
         //Confimation message
-        Toast.makeText(this, "Device deleted", Toast.LENGTH_LONG).show();
-
+        Toast.makeText(this, "Device deleted.", Toast.LENGTH_LONG).show();
     }
 
-    //Function - Update the nickname.
-    private boolean updateDeviceName(String deviceId, String deviceName){
-        //Point the databaseReference to the 'nickname' in the Device's Json.
-        DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference("Device/"+deviceId+"/nickname");
-        //Update the nickname to new value
-        dbReference.setValue(deviceName);
+    //Function - Compute and update the latest distance.
+    private void computeLatestDistance(DataSnapshot dataSnapshot){
+        //Check if the safety_zone is defined already before processing:
+        if (dataSnapshot.child("SafetyZone").exists()) {
 
-        return true;
+            //Grab latest current location & safety_zone location
+            double current_latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue(String.class));
+            double current_longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue(String.class));
+
+            //Check if the safety_zone's latitude & longitude is updated before processing:
+            if (dataSnapshot.child("SafetyZone/s_latitude").exists()) {
+                safety_latitude = dataSnapshot.child("SafetyZone/s_latitude").getValue(Double.class);
+            }
+            if(dataSnapshot.child("SafetyZone/s_longitude").exists()) {
+                safety_longitude = dataSnapshot.child("SafetyZone/s_longitude").getValue(Double.class);
+            }
+
+            //Compute the latest distance
+            float[] new_d = new float[3];
+            Location.distanceBetween(current_latitude, current_longitude, safety_latitude, safety_longitude, new_d);
+
+            //Push the distance data to the Firebase AGAIN.* //("Device/" +deviceId+ "/distance");
+            dataSnapshot.child("distance").getRef().setValue(new_d[0] + "m");
+
+            //Trigger the sensor's status based on latest distance.
+            triggerSensorStatus(dataSnapshot, new_d[0]);
+
+        }
     }
 
-    //Function - Grab the latest la
-//    private double grabLatestSafety_La(String id){
-//        //Grab the latest safety_zone's latitude for later usage.
-//        databaseSafetyLocations = FirebaseDatabase.getInstance().getReference("Device/" +id+ "/SafetyZone/s_latitude");
-//        databaseSafetyLocations.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                //Check if safetyZone exists.
-//                //If no, a 0.0 is passed.
-//                if(dataSnapshot.exists()){
-//                    llla = dataSnapshot.getValue(double.class);
-//                }
-//            }
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//            }
-//        });
-//        return llla;
-//    }
-
-    //Function - Grab the latest lo
-//    private double grabLatestSafety_Lo(String id){
-//        //Grab the latest safety_zone's longtitude for later usage.
-//        databaseSafetyLocations = FirebaseDatabase.getInstance().getReference("Device/" +id+ "/SafetyZone/s_longitude");
-//        databaseSafetyLocations.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                //Check if safetyZone exists.
-//                //If no, a 0.0 is passed.
-//                if(dataSnapshot.exists()){
-//                    lllo = dataSnapshot.getValue(double.class);
-//                }
-//            }
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//        return lllo;
-//    }
-
-
-
-    //Function - Update the distance
-//    private boolean updateLatestDistance(String deviceId, double safety_la, double safety_lo){
-//
-//        //Compute the latest distance between device's current location & selected safetyzone location.
-//        //To provide real-time distance changing
-//        //Firebase - Push latest distance.
-//        DatabaseReference dbLatest_distance = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/distance");
-//        DatabaseReference dbLatest_extra = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/extra");
-//
-//        //Check if safetyZone defined
-//        if(safety_la!=0.0){
-//            float[] new_d = new float[3];
-//            //Compute the distance AGAIN.*
-//            Location.distanceBetween( Double.parseDouble(latitude), Double.parseDouble(longtitude), safety_la, safety_lo, new_d);
-//
-//            //Push the distance data to the Firebase AGAIN.*
-//            dbLatest_distance.setValue(new_d[0]+"m");
-//
-//            //If distance < 50m, trigger the alarm on the device (Raspberrypi)
-//            //By Sending 'on' or 'off' to Firebase.
-//            if(new_d[0] < 50){
-//                dbLatest_extra.setValue("on");
-//            }else{
-//                dbLatest_extra.setValue("off");
-//            }
-//        }
-//
-//        return true;
-//    }
-
+    //Function - Trigger the sensor's status based on latest distance. (Used in function - computeLatestDistance)
+    private void triggerSensorStatus(DataSnapshot dataSnapshot, float latestDistance){
+        //If distance < 50m, trigger sensor status to 'on'.
+        if(latestDistance < 50){
+            dataSnapshot.child("extra").getRef().setValue("on");
+        }else{
+            dataSnapshot.child("extra").getRef().setValue("off");
+        }
+    }
 }

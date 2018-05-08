@@ -1,5 +1,6 @@
 package sarah.nci.ie.reminder.listItem_Dialog;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,8 +33,10 @@ import sarah.nci.ie.reminder.R;
 public class D_01_StartConnection extends AppCompatActivity {
 
     //Define Firebase
-    FirebaseDatabase database;
     DatabaseReference myRef;
+
+    //Retrieve the intent
+    String deviceId, deviceName;
 
     static final String LOG_TAG = D_01_StartConnection.class.getCanonicalName();
 
@@ -53,12 +56,18 @@ public class D_01_StartConnection extends AppCompatActivity {
     CognitoCachingCredentialsProvider credentialsProvider;
 
     //Extract the specefic keys from the json object.
-    String message, latitude, longtitude, utc_time;
+    String mqttMessage, latitude, longtitude, utc_time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.d_01_start_connection);
+
+        //Get the intent from the D_00_MainDialogActivity
+        Intent intent = getIntent();
+        //Retrieve the particular device's id & name
+        deviceId = intent.getStringExtra(D_00_MainDialog.DEVICE_ID);
+        deviceName = intent.getStringExtra(D_00_MainDialog.DEVICE_NAME);
 
         tvLastMessage = (TextView) findViewById(R.id.tvLastMessage);
         tvClientId = (TextView) findViewById(R.id.tvClientId);
@@ -159,42 +168,32 @@ public class D_01_StartConnection extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         try {
-                                            message = new String(data, "UTF-8");
+                                            mqttMessage = new String(data, "UTF-8");
 
                                             //Extract the specefic keys from the json object.
                                             try {
-                                                JSONObject reader = new JSONObject(message);
+                                                JSONObject reader = new JSONObject(mqttMessage);
 
                                                 JSONObject gps_data  = reader.getJSONObject("gps_data");
                                                 latitude = gps_data.getString("Latitude");
                                                 longtitude = gps_data.getString("Longtitude");
                                                 utc_time = gps_data.getString("UTC Time");
 
-                                                //Send the RAW mqtt message to Firebase - Raw_Location
-                                                database = FirebaseDatabase.getInstance();
-                                                myRef = database.getReference("Raw_Location");
-                                                myRef.setValue(message);
-//                                                //Send the queried json message to Firebase - Location
-//                                                myRef = database.getReference("Location/Latitude");
-//                                                myRef.setValue(latitude);
-//                                                myRef = database.getReference("Location/Longtitude");
-//                                                myRef.setValue(longtitude);
+
+                                                myRef = FirebaseDatabase.getInstance().getReference("Raw_Location");
+                                                myRef.setValue(mqttMessage);
+
 //                                                myRef = database.getReference("Location/Utc time");
 //                                                myRef.setValue(utc_time);
-//                                                //Send the extracted message to Firebase - Device/LB7ujxfEps5uYAfmmaH
-                                                myRef = database.getReference("Device/-LBlJmnxJkrIwDtNNKkP/address");
+//                                              //Update the address
+                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/address");
                                                 myRef.setValue(latitude+ ", "+longtitude);
-                                                //Send to la & lo
-                                                myRef = database.getReference("Device/-LBlJmnxJkrIwDtNNKkP/latitude");
-                                                myRef.setValue(latitude);
-                                                myRef = database.getReference("Device/-LBlJmnxJkrIwDtNNKkP/longitude");
-                                                myRef.setValue(longtitude);
 
-                                                myRef = database.getReference("Device/-LBlfveZ6rfJ6ab8I5yH/latitude");
+                                                //Update the la & lo
+                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/latitude");
                                                 myRef.setValue(latitude);
-                                                myRef = database.getReference("Device/-LBlfveZ6rfJ6ab8I5yH/longitude");
+                                                myRef = FirebaseDatabase.getInstance().getReference("Device/" +deviceId+ "/longitude");
                                                 myRef.setValue(longtitude);
-
 
                                             } catch (JSONException e) {
                                                 e.printStackTrace();

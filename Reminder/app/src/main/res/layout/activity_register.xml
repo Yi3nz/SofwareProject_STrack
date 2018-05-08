@@ -23,38 +23,22 @@
         android:id="@+id/etDeviceName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/auth_method_button_drawablePadding"
         android:layout_below="@+id/tvDeviceName"
-        android:layout_centerHorizontal="true"
         android:background="@android:drawable/editbox_background_normal"
         android:ems="10"
         android:hint="Enter the device's nickname"
-        android:inputType="textPersonName"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="45dp" />
+        android:inputType="textPersonName" />
 
-    <!--Define the initial safety-zone-->
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="305dp"
-        android:layout_below="@+id/tvConfirmHome"
-        android:layout_centerHorizontal="true"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="115dp" />
 
     <Button
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_marginTop="@dimen/auth_method_button_drawablePadding"
+        android:layout_below="@+id/etDeviceName"
         android:background="@color/colorAccent"
         android:onClick="registerClick"
-        android:text="Register"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="434dp" />
-
-
+        android:text="Register" />
 
 </LinearLayout>
