@@ -1,14 +1,16 @@
 package sarah.nci.ie.reminder;
 
 /*
- * Register a new device and store it in Firebase.
+ * Register a new device and store it into Firebase - Reference: https://www.youtube.com/watch?v=EM2x33g4syY
  *
- * Reference: https://www.youtube.com/watch?v=EM2x33g4syY
- *
- * 1. Define the Firebase references
- * 2. On 'register' button clicked, store the data to Firebase with a unique key.
+ * 1. Retrieve the QRcodeScanningResult through intent's extra.
+ * 2. Retrieve the entered nickname.
+ * 3. Generate a unique key (id).
+ * 4. Generate a new Device by assigning associated attribute values.
+ * 5. On 'register' button clicked, store it to Firebase under 'Device'.
  */
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -20,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import sarah.nci.ie.reminder.db_Firebase.Device;
+import sarah.nci.ie.reminder.listItem_Dialog.D_00_MainDialog;
 
 public class Activity_RegisterDevice extends AppCompatActivity {
 
@@ -28,6 +31,9 @@ public class Activity_RegisterDevice extends AppCompatActivity {
 
     //Define xml's reference
     EditText etDeviceName;
+
+    //Retrieve the intent
+    String qrCodeResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +45,15 @@ public class Activity_RegisterDevice extends AppCompatActivity {
 
         //Define xml's reference
         etDeviceName = (EditText)findViewById(R.id.etDeviceName);
+
+        //Get the intent from the Avtivity_Main
+        Intent intent = getIntent();
+        //Retrieve the intent result
+        qrCodeResult = intent.getStringExtra(Activity_Main.QRCODE_CONTENT);
     }
 
 
-    //SaveButton - SaveAll
+    //On register button clicked
     public void registerClick(View v){
         //Get the text from the text field (Pass to Activity_Main)
         String name = etDeviceName.getText().toString().trim();
@@ -53,8 +64,7 @@ public class Activity_RegisterDevice extends AppCompatActivity {
             String deviceId = dbDevice.push().getKey();
 
             //Grab the entered device name
-            Device device = new Device(deviceId, name, "null",
-                    "Current address", "...m", "extra");
+            Device device = new Device(deviceId, name, qrCodeResult, "Current address", "...m", "extra");
 
             //Store this device into the specific 'id' in the Firebase
             dbDevice.child(deviceId).setValue(device);
@@ -64,7 +74,7 @@ public class Activity_RegisterDevice extends AppCompatActivity {
             finish();
 
         }else{
-            Toast.makeText(this, "Please enter a name.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please enter a valid name.", Toast.LENGTH_LONG).show();
         }
 
     }

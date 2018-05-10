@@ -16,9 +16,13 @@ import org.json.JSONObject;
 import sarah.nci.ie.reminder.Activity_Main;
 import sarah.nci.ie.reminder.R;
 
+/*
+ * On particular button clicked, send 'on'/'off' message to Firebase.
+ * To be retrieve later by the RaspberryPi to trigger its sensors status.
+ */
 public class D_04_RemoteControl extends AppCompatActivity {
 
-    //Define the variables
+    //Define the xml elements
     Switch swLight, swBuzzer;
     SeekBar sbLight, sbBuzzer;
 

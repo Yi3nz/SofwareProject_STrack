@@ -2,30 +2,53 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:background="@drawable/splash_gradient_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="270dp"
         android:orientation="vertical"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:layout_marginTop="85dp"
+        android:id="@+id/upperPart">
 
         <ImageView
-            android:id="@+id/splashImage"
+            android:id="@+id/imgSplash"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
-            android:layout_marginTop="80dp"
-            android:src="@drawable/splash_strack" />
+            android:src="@drawable/splash_icon" />
 
         <TextView
+            android:id="@+id/tvSplash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="15dp"
-            android:text="@string/textSplashScreen"
-            android:textColor="@android:color/background_light"
-            android:textSize="18sp" />
+            android:layout_marginTop="40dp"
+            android:fontFamily="@font/electrolize"
+            android:text="Ensure you know where it is."
+            android:textColor="@color/colorLight"
+            android:textSize="26sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:layout_below="@id/upperPart"
+        android:layout_marginTop="80dp"
+        android:id="@+id/lowerPart">
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/splash_button"
+            android:text="Start tracking"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

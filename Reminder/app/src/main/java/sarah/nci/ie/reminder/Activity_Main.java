@@ -1,9 +1,13 @@
 package sarah.nci.ie.reminder;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,7 +20,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
@@ -24,18 +27,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sarah.nci.ie.reminder.actionbar.Action_Gallery;
-import sarah.nci.ie.reminder.actionbar.Action_Photo;
 import sarah.nci.ie.reminder.db_Firebase.Device;
 import sarah.nci.ie.reminder.db_Firebase.DeviceListAdapter;
 import sarah.nci.ie.reminder.listItem_Dialog.D_00_MainDialog;
@@ -45,9 +42,25 @@ import sarah.nci.ie.reminder.listItem_Dialog.D_00_MainDialog;
  * Actionbar reference: https://www.journaldev.com/9357/android-actionbar-example-tutorial
  * Update deviceName onLongItemClick reference: https://www.youtube.com/watch?v=2bYWf0z8_8s&index=4&list=PLk7v1Z2rk4hj6SDHf_YybDeVhUT9MXaj1
  * Real-time update the listView if child-change reference: https://stackoverflow.com/questions/46690220/data-is-getting-added-into-list-instead-of-getting-updated-in-addchildeventliste
+ * Simple alert dialog reference: https://www.youtube.com/watch?v=va-nn1JAwj8
  *
+ * Oncreate - ListView
+ *      * On Item click - Open the D_00_MainDialog, while put intent extra the selected item's ID.
+ *      * On Item longclick - showUpdateDialog.
+ *      * Initialize the listView according to Firebase data.
  *
+ * Onstart - Compute & update latest distance between device's (Raspberrypi) current location & defined safety zone.
+ *      * Fetch device's (RaspberryPi) current location from Firebase.
+ *      * Check if safety_zone already defined:
+ *          - If yes: Grab the latest safety_zone's latitude for later usage.
+ *                    Grab the latest safety_zone's longitude for later usage.
+ *      * Compute and provide real-time distance changing.
+ *      * Trigger the device's (Raspberrypi) sensor if distance < 50 meters.
+ *
+ * OnFloatButtonClick - Goes to scanning page
+ *      * Brings back the scanning result once scanning end successfully.
  */
+
 public class Activity_Main extends AppCompatActivity {
 
     //Define Firebase's database reference
@@ -69,6 +82,8 @@ public class Activity_Main extends AppCompatActivity {
     //To store intent's extra for D_00_MainDialog
     public static final String DEVICE_NAME = "deviceName";
     public static final String DEVICE_ID = "deviceId";
+    //To store intent's extra for Activity_RegisterDevice
+    public static final String QRCODE_CONTENT = "qrcode";
 
     //Actionbar - onCreate
     @Override
@@ -81,15 +96,6 @@ public class Activity_Main extends AppCompatActivity {
     //Actionbar - OnItemClicked
     @Override
     public boolean onOptionsItemSelected(MenuItem item) { switch(item.getItemId()) {
-        case R.id.photo:
-            Intent i = new Intent(this, Action_Photo.class);
-            this.startActivity(i);
-            return(true);
-        case R.id.gallery:
-            Intent i2 = new Intent();
-            i2.setClass(Activity_Main.this, Action_Gallery.class);
-            this.startActivity(i2);
-            return(true);
         case R.id.exit:
             finish();
             return(true);
@@ -119,6 +125,7 @@ public class Activity_Main extends AppCompatActivity {
 
         //On ListViewItemClick - Open the D_00_MainDialog
         listViewDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //Fetch the device from the defined list
@@ -131,7 +138,8 @@ public class Activity_Main extends AppCompatActivity {
                 intent.putExtra(DEVICE_ID, device.getDeviceId());
                 intent.putExtra(DEVICE_NAME, device.getNickname());
 
-                startActivity(intent);
+                //Open the intent with animation
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(Activity_Main.this).toBundle());
             }
         });
 
@@ -264,15 +272,23 @@ public class Activity_Main extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Goes to Scanning
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
         if(result != null){
             if(result.getContents()==null){
                 Toast.makeText(this, "You cancelled the scanning", Toast.LENGTH_LONG).show();
             }
-            else {//Once scan completed...
+            else {//If scan successed
+
+                //Toast confirmation
                 Toast.makeText(this, "Success " + result.getContents(),Toast.LENGTH_LONG).show();
 
-                //Forward to the add activity - activity_regirsterdevice
-                startActivity(new Intent(this, Activity_RegisterDevice.class));
+                //Create a new intent to open the main dialog
+                Intent intent = new Intent();
+                intent.setClass(this, Activity_RegisterDevice.class);
+                //Put extra the retrieved QRcode's content
+                intent.putExtra(QRCODE_CONTENT, result.getContents());
+                //Start the register device activity
+                startActivity(intent);
             }
         }
         else {
@@ -296,7 +312,7 @@ public class Activity_Main extends AppCompatActivity {
         final Button btnDeleteDevice = (Button)dialogView.findViewById(R.id.btnDeleteDevice);
 
         //Set the title of the dialog (include the original name of the device)
-        dialogBuilder.setTitle("Updating Device "+deviceName);
+        dialogBuilder.setTitle("Updating Device '"+deviceName+"'.");
         //Create & show the dialog
         final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
@@ -325,8 +341,23 @@ public class Activity_Main extends AppCompatActivity {
         btnDeleteDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Call the delete method
-                deleteDevice(deviceId);
+
+                //Initialize another alert dialog to confirm delete
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity_Main.this);
+                builder.setMessage("Confirm to delete?")
+                        .setPositiveButton("Sure", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Call the delete method
+                                deleteDevice(deviceId);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null);
+
+                //Create & show the dialog
+                AlertDialog alert = builder.create();
+                alert.show();
+
                 //Close the dialog once completed.
                 alertDialog.dismiss();
             }
@@ -361,13 +392,7 @@ public class Activity_Main extends AppCompatActivity {
         //Check if the safety_zone is defined already before processing:
         if (dataSnapshot.child("SafetyZone").exists()) {
 
-            //Grab latest current location & safety_zone location
-//            if (dataSnapshot.child("Current location/Latitude").exists()) {
-//                double current_latitude = Double.parseDouble(dataSnapshot.child("Current location/Latitude").getValue(String.class));
-//            }
-//            if (dataSnapshot.child("Current location/Latitude").exists()) {
-//                double current_latitude = Double.parseDouble(dataSnapshot.child("Current location/Longitude").getValue(String.class));
-//            }
+            //Grab the current location
             double current_latitude = Double.parseDouble(dataSnapshot.child("Current location/Latitude").getValue(String.class));
             double current_longitude = Double.parseDouble(dataSnapshot.child("Current location/Longitude").getValue(String.class));
 

@@ -37,7 +37,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/auth_method_button_drawablePadding"
         android:layout_below="@+id/etDeviceName"
-        android:background="@color/colorAccent"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/colorLight"
         android:onClick="registerClick"
         android:text="Register" />
 

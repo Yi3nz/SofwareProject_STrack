@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#bcaaa4</color>     <!--Action bar-->
-    <color name="colorPrimaryDark">#ccc0ae</color> <!--Header-->
-    <color name="colorAccent">#8d6e63</color>
-    <color name="colorDialog">#ffc0d5</color>
+    <color name="colorPrimary">#9fa8da</color>     <!--Action bar-->
+    <color name="colorPrimaryDark">#49599a</color> <!--Header-->
+    <color name="colorAccent">#9fa8da</color>
+    <color name="colorDialog">#9fa8da</color>
+    <color name="colorLight">#fffde7</color>
 </resources>

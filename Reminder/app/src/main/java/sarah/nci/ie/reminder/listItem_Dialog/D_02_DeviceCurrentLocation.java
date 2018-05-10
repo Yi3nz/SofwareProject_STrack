@@ -30,8 +30,8 @@ import sarah.nci.ie.reminder.R;
  *
  * 1. On Map ready, set a maker on the map.
  * 2. OnCreate:
- *             Fetch the latest raw_location from Firebase.
- *             Update the marker's location based on the latest data fetched.
+ *        * Fetch the latest current location from Firebase.
+ *        * Update the marker's location based on the latest data fetched.
  */
 public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMapReadyCallback {
 
@@ -86,11 +86,6 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(device_updated_location));
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
                 }
-//                if(dataSnapshot.child("SafetyZone/s_longitude").exists()) {
-//                    current_longitude = Double.parseDouble(dataSnapshot.child("Current location/Longitude").getValue(String.class));
-//                }
-
-
             }
 
             @Override
@@ -113,7 +108,7 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
 
     }
 
-    /**
+    /*
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
@@ -134,7 +129,6 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
         myMarker = mMap.addMarker(m);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(device_current_location));
-
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
     }
 }

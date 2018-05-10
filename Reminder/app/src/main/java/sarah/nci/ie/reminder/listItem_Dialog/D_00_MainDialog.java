@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -29,32 +30,22 @@ import sarah.nci.ie.reminder.R;
  * Btn 1 - Start subscribing AWS mqtt && publish to Firebase.
  * Btn 2 - View device's (Raspberrypi) current location on map view.
  * Btn 3 - Define a safety zone (E.g. home, Jervis shopping center etc.) using Place picker.
- * Btn 4 - Remote control led & buzzer.
- * Btn 5 - Remove device.
+ * Btn 4 - Remote control the led & buzzer of the device.
+ * Btn 5 -
  *
- * EXTRA: Compute the distance between device's (Raspberrypi) current location & defined safety zone.
- * On create: (Once listitem clicked)
- * 1. Fetch device's (RaspberryPi) current location from Firebase.
- * 2. Check if safety_zone already defined:
- *    - If yes: Grab the latest safety_zone's latitude for later usage.
- *              Grab the latest safety_zone's longitude for later usage.
- * 3. Compute the distance if safety_zone exists:
- *    - If yes: Compute and provide real-time distance changing.
- *    - If no:  Returns '-- m'. (-- meters)
- * 4. Trigger the device's (Raspberrypi) sensor if distance < 50 meters.
+
  *
- * EXTRA2: Compute the initial distance once safety-zone selected.
- * On btn 3's activity finished:
- * 1. Push the selected safety-zone's location to Firebase Device/specific_deviceId/SafetyZone.
- * 2. Seperate safety_zone location into latitude & longitude.
- * 3. Compute the distance between them.
- * 4. Push the latest distance to Device/distance. (Which update the initial list-item's distance.)
+ * On Btn 3 clicked:
+ * Initialize the place picker.
+ * Retrieve the selected location's information.
+ * Push the data to Firebase 'Device/SafetyZone'.
  */
 
 public class D_00_MainDialog extends Activity {
 
     //Define the buttons
-    Button btn01, btn02, btn03, btn04, btn05;
+    Button btn01, btn02, btn03, btn04;
+    TextView tvDevieName, tvClose;
 
     //PlacePicker - for Dialog 03: Select Safetyzone
     int PLACE_PICKER_REQUEST = 3;
@@ -75,7 +66,7 @@ public class D_00_MainDialog extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels;
         int height = dm.heightPixels;
-        getWindow().setLayout((int)(width*.8),(int)(height*.6));
+        getWindow().setLayout((int)(width*.8),(int)(height*.8));
 
         //Get the intent from the Main activity
         Intent intent = getIntent();
@@ -88,7 +79,19 @@ public class D_00_MainDialog extends Activity {
         btn02 = (Button)findViewById(R.id.btnDeviceMapView);
         btn03 = (Button)findViewById(R.id.btnDefineSafetyZone);
         btn04 = (Button)findViewById(R.id.btnRemoteControls);
-        btn05 = (Button)findViewById(R.id.btnRemoveDevice);
+        tvDevieName = (TextView)findViewById(R.id.tvDeviceName);
+        tvClose = (TextView)findViewById(R.id.tvClose);
+
+        //Set the device name
+        tvDevieName.setText(deviceName);
+
+        //On close clicked
+        tvClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         //Btn01 - Start subscribing AWS mqtt && publish to Firebase.
         btn01.setOnClickListener(new View.OnClickListener() {
@@ -150,13 +153,6 @@ public class D_00_MainDialog extends Activity {
             }
         });
 
-        //Btn05 - Remove device.
-        btn05.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(D_00_MainDialog.this, D_05_RemoveDevice.class));
-            }
-        });
 
     }
 

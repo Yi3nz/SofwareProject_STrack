@@ -26,9 +26,15 @@ import java.util.UUID;
 
 import sarah.nci.ie.reminder.R;
 
-/* Connect & Subscribe to AWS MQTT topic
+/* Connect & Subscribe to AWS MQTT topic:
  * Reference AndroidPubSubWebSocket_Example: https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSubWebSocket
  *
+ * 1. Connect automatically to the AWS MQTT topic 'pi/observations/DeviceID' on page created.
+ * 2. Define button01 - Subscribe to the topic.
+ *      * Retrieve the message from the topic.
+ *      * Seperated the message which comes from a JSON format.
+ *      * Push the data to Firebase 'Device/specificID'.
+ * 3. Define button02 - Disconnect to AWS.
  */
 public class D_01_StartConnection extends AppCompatActivity {
 
@@ -38,15 +44,16 @@ public class D_01_StartConnection extends AppCompatActivity {
     //Retrieve the intent
     String deviceId, deviceName;
 
+    //Define the LOG
     static final String LOG_TAG = D_01_StartConnection.class.getCanonicalName();
-
-    // IOT Endpoint
+    //IOT Endpoint
     private static final String CUSTOMER_SPECIFIC_ENDPOINT = "ansingrsn5txz.iot.us-west-2.amazonaws.com";
-    // Unauthenticated cognito pool ID
+    //Unauthenticated cognito pool ID
     private static final String COGNITO_POOL_ID = "us-west-2:cfde6d61-be8c-4330-ad6b-60df256ce3b3";
-    // Used region of AWS IoT
+    //Used region of AWS IoT
     private static final Regions MY_REGION = Regions.US_WEST_2;
 
+    //Define the xml elements
     TextView tvLastMessage, tvClientId, tvStatus;
     Button btnSubscribe, btnDisconnect;
 
@@ -69,23 +76,20 @@ public class D_01_StartConnection extends AppCompatActivity {
         deviceId = intent.getStringExtra(D_00_MainDialog.DEVICE_ID);
         deviceName = intent.getStringExtra(D_00_MainDialog.DEVICE_NAME);
 
+        //Define the xml's elements
         tvLastMessage = (TextView) findViewById(R.id.tvLastMessage);
         tvClientId = (TextView) findViewById(R.id.tvClientId);
         tvStatus = (TextView) findViewById(R.id.tvStatus);
-
         btnSubscribe = (Button) findViewById(R.id.btnSubscribe);
         btnSubscribe.setOnClickListener(subscribeClick);
-
         btnDisconnect = (Button) findViewById(R.id.btnDisconnect);
         btnDisconnect.setOnClickListener(disconnectClick);
 
-        // MQTT client IDs are required to be unique per AWS IoT account.
-        // This UUID is "practically unique" but does not _guarantee_
-        // uniqueness.
+        //Generate a MQTT client ID
         clientId = UUID.randomUUID().toString();
         tvClientId.setText(clientId);
 
-        // Initialize the AWS Cognito credentials provider
+        //Initialize the AWS Cognito credentials provider
         credentialsProvider = new CognitoCachingCredentialsProvider(
                 getApplicationContext(), // context
                 COGNITO_POOL_ID, // Identity Pool ID

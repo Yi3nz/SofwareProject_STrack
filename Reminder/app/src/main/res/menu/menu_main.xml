@@ -3,17 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/photo"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/actionbar_photo" />
-
-    <item
-        android:id="@+id/gallery"
-        android:title="@string/actionbar_gallery" />
-
-    <item
         android:id="@+id/exit"
         app:showAsAction="never"
         android:title="@string/actionbar_exit">
     </item>
+
 </menu>
