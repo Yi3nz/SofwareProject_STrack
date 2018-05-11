@@ -277,12 +277,8 @@ public class Activity_Main extends AppCompatActivity {
             if(result.getContents()==null){
                 Toast.makeText(this, "You cancelled the scanning", Toast.LENGTH_LONG).show();
             }
-            else {//If scan successed
-
-                //Toast confirmation
-                Toast.makeText(this, "Success " + result.getContents(),Toast.LENGTH_LONG).show();
-
-                //Create a new intent to open the main dialog
+            else {
+                //If scan successed, go to the registering page.
                 Intent intent = new Intent();
                 intent.setClass(this, Activity_RegisterDevice.class);
                 //Put extra the retrieved QRcode's content

@@ -5,8 +5,7 @@
     android:orientation="vertical"
     android:padding="@dimen/auth_method_button_drawablePadding"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:layout_height="match_parent">
 
     <EditText
         android:id="@+id/etUpdateName"
@@ -15,8 +14,6 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:hint="Enter new name"
-        android:textColor="@color/colorLight"
-        android:textColorHint="@color/colorLight"
         tools:layout_editor_absoluteX="58dp"
         tools:layout_editor_absoluteY="171dp" />
 
@@ -24,7 +21,7 @@
         android:id="@+id/btnUpdateName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:textColor="@color/colorLight"
         android:text="Update" />
 
@@ -33,7 +30,7 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:textColor="@color/colorLight"
         android:text="Delete" />
 </LinearLayout>
