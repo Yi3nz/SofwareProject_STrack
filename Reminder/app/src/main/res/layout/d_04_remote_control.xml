@@ -7,6 +7,12 @@
     android:layout_margin="16dp"
     tools:context="sarah.nci.ie.reminder.listItem_Dialog.D_04_RemoteControl">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    </LinearLayout>
     <TextView
         android:id="@+id/tvLight"
         android:layout_width="wrap_content"
@@ -29,16 +35,16 @@
         android:layout_alignParentRight="true"
         android:onClick="triggerLED"/>
 
-    <SeekBar
-        android:id="@+id/sbLight"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvLight"
-        android:layout_marginTop="44dp"
-        tools:layout_editor_absoluteX="123dp"
-        tools:layout_editor_absoluteY="157dp" />
+    <!--<SeekBar-->
+        <!--android:id="@+id/sbLight"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_below="@+id/tvLight"-->
+        <!--android:layout_marginTop="44dp"-->
+        <!--tools:layout_editor_absoluteX="123dp"-->
+        <!--tools:layout_editor_absoluteY="157dp" />-->
 
     <TextView
         android:id="@+id/tvBuzzer"
@@ -46,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/sbLight"
+        android:layout_below="@+id/tvLight"
         android:layout_marginTop="60dp"
         android:text="Buzzer"
         android:textSize="18sp"
@@ -56,19 +62,20 @@
         android:id="@+id/swBuzzer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/sbBuzzer"
+        android:layout_alignBaseline="@+id/tvBuzzer"
+        android:layout_alignBottom="@+id/tvBuzzer"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:onClick="triggerBuzzer"/>
 
-    <SeekBar
-        android:id="@+id/sbBuzzer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvBuzzer"
-        android:layout_marginTop="44dp"
-        tools:layout_editor_absoluteX="123dp"
-        tools:layout_editor_absoluteY="157dp" />
+    <!--<SeekBar-->
+        <!--android:id="@+id/sbBuzzer"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_below="@+id/tvBuzzer"-->
+        <!--android:layout_marginTop="44dp"-->
+        <!--tools:layout_editor_absoluteX="123dp"-->
+        <!--tools:layout_editor_absoluteY="157dp" />-->
 </RelativeLayout>

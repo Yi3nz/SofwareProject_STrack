@@ -65,6 +65,7 @@ public class Activity_Main extends AppCompatActivity {
 
     //Define Firebase's database reference
     DatabaseReference databaseDevices;
+    DatabaseReference databasePi;
 
     //Define a listView connected to Activity_main's listView
     ListView listViewDevices;
@@ -416,10 +417,15 @@ public class Activity_Main extends AppCompatActivity {
     //Function - Trigger the sensor's status based on latest distance. (Used in function - computeLatestDistance)
     private void triggerSensorStatus(DataSnapshot dataSnapshot, float latestDistance){
         //If distance < 50m, trigger sensor status to 'on'.
-        if(latestDistance < 50){
+        if(latestDistance > 50){
             dataSnapshot.child("extra").getRef().setValue("on");
+            databasePi = FirebaseDatabase.getInstance().getReference("Pi/distanceStatus");
+            databasePi.setValue("on");
+
         }else{
             dataSnapshot.child("extra").getRef().setValue("off");
+            databasePi = FirebaseDatabase.getInstance().getReference("Pi/distanceStatus");
+            databasePi.setValue("off");
         }
     }
 }

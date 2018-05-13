@@ -77,9 +77,6 @@ public class D_02_DeviceCurrentLocation extends FragmentActivity implements OnMa
                     current_latitude = Double.parseDouble(dataSnapshot.child("Current location/Latitude").getValue(String.class));
                     current_longitude = Double.parseDouble(dataSnapshot.child("Current location/Longitude").getValue(String.class));
 
-                    //Toast confirmation
-                    Toast.makeText(D_02_DeviceCurrentLocation.this, "Updated: " + current_latitude + ", " + current_longitude, Toast.LENGTH_LONG).show();
-
                     //Update the marker's location
                     LatLng device_updated_location = new LatLng(current_latitude, current_longitude);
                     myMarker.setPosition(device_updated_location);
